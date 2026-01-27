@@ -1,0 +1,179 @@
+{% extends 'marketra/base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+            <span
+                class="inline-block py-1 px-3 rounded-full bg-blue-50 text-primary text-xs font-semibold mb-6 tracking-wide uppercase">
+                AI-Powered E-commerce
+            </span>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-8 leading-tight">
+                Shopping experience, <span class="text-primary">redefined by AI.</span>
+            </h1>
+            <p class="text-lg text-text-medium mb-10 max-w-lg leading-relaxed">
+                Marketra AI analyzes your style to curate high-end products just for you. Calm, professional, and
+                tailored to your business needs.
+            </p>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <button class="btn-primary">Shop Now</button>
+                <button
+                    class="px-6 py-2 border-thin border-gray-200 rounded-md font-medium text-text-medium hover:bg-gray-50 transition-colors">
+                    Learn How It Works
+                </button>
+            </div>
+        </div>
+        <div class="relative">
+            <div
+                class="aspect-square bg-blue-50/50 rounded-2xl overflow-hidden flex items-center justify-center border-thin border-blue-100 shadow-soft">
+                <div class="text-center p-8">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Smart Curations</h3>
+                    <p class="text-text-muted text-sm">Your AI-driven selection updates in real-time based on your
+                        preferences.</p>
+                </div>
+            </div>
+            <!-- Decorative Elements -->
+            <div class="absolute -top-4 -right-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-100/20 rounded-full blur-3xl"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Section -->
+<section class="section-grey">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl font-bold mb-4">Featured Excellence</h2>
+                <p class="text-text-medium max-w-md">Our hand-picked selection of premium business and lifestyle
+                    essentials.</p>
+            </div>
+            <a href="#" class="text-primary font-medium hover:underline flex items-center group">
+                View All Collection
+                <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Product 1 -->
+            <div class="card group cursor-pointer">
+                <div
+                    class="aspect-[4/5] bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-gray-100">
+                    <span class="text-gray-300 font-medium">Product Image</span>
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs text-text-muted uppercase tracking-wider mb-1 block">Office</span>
+                        <h3
+                            class="text-base font-semibold text-text-dark mb-2 group-hover:text-primary transition-colors">
+                            Executive minimalist Desk</h3>
+                    </div>
+                    <span class="text-primary font-bold">$1,299</span>
+                </div>
+                <div class="flex items-center space-x-2 mt-4">
+                    <span class="badge-success italic">In Stock</span>
+                    <span class="text-[10px] text-text-muted">AI Rank: #1</span>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="card group cursor-pointer">
+                <div
+                    class="aspect-[4/5] bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-gray-100">
+                    <span class="text-gray-300 font-medium">Product Image</span>
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs text-text-muted uppercase tracking-wider mb-1 block">Tech</span>
+                        <h3
+                            class="text-base font-semibold text-text-dark mb-2 group-hover:text-primary transition-colors">
+                            Precision Wireless Mouse</h3>
+                    </div>
+                    <span class="text-primary font-bold">$89</span>
+                </div>
+                <div class="flex items-center space-x-2 mt-4">
+                    <span class="badge-error">Out of Stock</span>
+                    <span class="text-[10px] text-text-muted">Ships in 2 days</span>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="card group cursor-pointer">
+                <div
+                    class="aspect-[4/5] bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-gray-100">
+                    <span class="text-gray-300 font-medium">Product Image</span>
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs text-text-muted uppercase tracking-wider mb-1 block">Wearables</span>
+                        <h3
+                            class="text-base font-semibold text-text-dark mb-2 group-hover:text-primary transition-colors">
+                            Smart Chronograph V2</h3>
+                    </div>
+                    <span class="text-primary font-bold">$450</span>
+                </div>
+                <div class="flex items-center space-x-2 mt-4">
+                    <span class="badge-success">Limited Edition</span>
+                    <span class="text-[10px] text-text-muted">AI Verified</span>
+                </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="card group cursor-pointer">
+                <div
+                    class="aspect-[4/5] bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-gray-100">
+                    <span class="text-gray-300 font-medium">Product Image</span>
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs text-text-muted uppercase tracking-wider mb-1 block">Essentials</span>
+                        <h3
+                            class="text-base font-semibold text-text-dark mb-2 group-hover:text-primary transition-colors">
+                            Leather Portfolio Case</h3>
+                    </div>
+                    <span class="text-primary font-bold">$210</span>
+                </div>
+                <div class="flex items-center space-x-2 mt-4">
+                    <span class="badge-success italic">In Stock</span>
+                    <span class="text-[10px] text-text-muted">Popular for Business</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI Recommendation Banner -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+    <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold mb-6">Trustworthy AI Recommendations</h2>
+        <p class="text-text-medium mb-10 leading-relaxed text-lg">
+            Our technology doesn't just sell; it understands. We provide data-driven insights to ensure your shopping
+            experience remains calm, deliberate, and professional.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-6">
+                <div class="text-primary font-bold text-4xl mb-2">98%</div>
+                <div class="text-text-muted text-sm uppercase tracking-wide">Match Accuracy</div>
+            </div>
+            <div class="p-6 border-x border-gray-100">
+                <div class="text-primary font-bold text-4xl mb-2">24/7</div>
+                <div class="text-text-muted text-sm uppercase tracking-wide">AI Optimization</div>
+            </div>
+            <div class="p-6">
+                <div class="text-primary font-bold text-4xl mb-2">Premium</div>
+                <div class="text-text-muted text-sm uppercase tracking-wide">Only Verified Brands</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
