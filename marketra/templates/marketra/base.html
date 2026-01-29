@@ -106,20 +106,27 @@
                         class="nav-link">Featured</a>
                     <a href="#" onclick="switchSection('recommendation', event)" id="nav-recommendation"
                         class="nav-link">Recommendations</a>
+                    <a href="#" onclick="switchSection('collection', event)" id="nav-collection"
+                        class="nav-link">Collection</a>
                     <a href="#" onclick="switchSection('account', event)" id="nav-account" class="nav-link">Account</a>
                 </div>
-                <div class="flex space-x-4">
+                <div class="flex space-x-4 items-center">
                     <button class="text-text-medium hover:text-primary transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </button>
-                    <button class="text-text-medium hover:text-primary transition-colors">
+                    <button onclick="switchSection('collection', event)"
+                        class="text-text-medium hover:text-primary transition-colors relative">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                         </svg>
+                        <span id="collection-badge"
+                            class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center {% if not collection_count %}hidden{% endif %}">
+                            {{ collection_count|default:0 }}
+                        </span>
                     </button>
                 </div>
             </div>
@@ -171,7 +178,7 @@
         function switchSection(sectionId, event) {
             if (event) event.preventDefault();
 
-            const sections = ['home', 'features', 'recommendation', 'account'];
+            const sections = ['home', 'features', 'recommendation', 'collection', 'account'];
             const currentActive = document.querySelector('.section-content.active');
             const target = document.getElementById('section-' + sectionId);
 
@@ -195,6 +202,73 @@
             } else {
                 target.classList.add('active');
             }
+        }
+
+        async function addToCollection(productId, btn) {
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Adding...';
+
+            try {
+                const response = await fetch(`/collection/add/${productId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    const badge = document.getElementById('collection-badge');
+                    badge.innerText = data.count;
+                    badge.classList.remove('hidden');
+                    btn.innerText = 'Added to Collection';
+                    btn.classList.add('bg-success');
+                }
+            } catch (error) {
+                console.error('Error adding to collection:', error);
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function removeFromCollection(productId) {
+            try {
+                const response = await fetch(`/collection/remove/${productId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    const badge = document.getElementById('collection-badge');
+                    badge.innerText = data.count;
+                    if (data.count === 0) badge.classList.add('hidden');
+                    // Refresh if in collection view
+                    if (document.getElementById('section-collection').classList.contains('active')) {
+                        location.reload();
+                    }
+                }
+            } catch (error) {
+                console.error('Error removing from collection:', error);
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
 
         // Initialize first section
