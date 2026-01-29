@@ -38,8 +38,9 @@
             <!-- Product Info -->
             <div class="flex flex-col">
                 <div class="mb-8">
-                    <span class="text-xs text-primary font-bold uppercase tracking-widest mb-3 block">{{
-                        product.category.name|default:"Uncategorized" }}</span>
+                    <span class="text-xs text-primary font-bold uppercase tracking-widest mb-3 block">
+                        {{ product.category.name|default:"Uncategorized" }}
+                    </span>
                     <h1 class="text-4xl md:text-5xl font-extrabold text-text-dark mb-4 leading-tight">
                         {{ product.name }}
                     </h1>
