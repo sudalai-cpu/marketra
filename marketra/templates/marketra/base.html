@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,6 +57,30 @@
             .badge-error {
                 @apply bg-red-100 text-error text-xs font-semibold px-2.5 py-0.5 rounded-full;
             }
+            .badge-ai {
+                @apply bg-blue-50 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-blue-100;
+            }
+            .glow-subtle {
+                box-shadow: 0 0 20px rgba(0, 86, 179, 0.08);
+            }
+
+            /* Section Transitions */
+            .section-content {
+                @apply transition-all duration-500 ease-out transform pointer-events-none opacity-0 translate-y-4 fixed inset-0 overflow-y-auto pt-16;
+                visibility: hidden;
+            }
+            .section-content.active {
+                @apply opacity-100 translate-y-0 pointer-events-auto relative inset-auto pt-0;
+                visibility: visible;
+            }
+            .section-content.exiting {
+                @apply opacity-0 -translate-y-4;
+            }
+
+            /* Prevent scroll jump when switching */
+            body {
+                overflow-x: hidden;
+            }
         }
     </style>
     <!-- Google Fonts - Inter -->
@@ -63,6 +88,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body class="flex flex-col min-h-screen">
     <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,20 +97,29 @@
                     <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                         <span class="text-white font-bold">M</span>
                     </div>
-                    <span class="text-xl font-bold tracking-tight text-primary">Marketra.ai</span>
+                    <span class="text-xl font-bold tracking-tight text-primary">Marketra</span>
                 </div>
                 <div class="hidden md:flex space-x-8 text-sm font-medium">
-                    <a href="#" class="text-primary border-b-2 border-primary pb-1">Home</a>
-                    <a href="#" class="text-text-medium hover:text-primary transition-colors">Featured</a>
-                    <a href="#" class="text-text-medium hover:text-primary transition-colors">Recommendations</a>
-                    <a href="#" class="text-text-medium hover:text-primary transition-colors">Account</a>
+                    <a href="#" onclick="switchSection('home', event)" id="nav-home"
+                        class="nav-link active-nav">Home</a>
+                    <a href="#" onclick="switchSection('features', event)" id="nav-features"
+                        class="nav-link">Featured</a>
+                    <a href="#" onclick="switchSection('recommendation', event)" id="nav-recommendation"
+                        class="nav-link">Recommendations</a>
+                    <a href="#" onclick="switchSection('account', event)" id="nav-account" class="nav-link">Account</a>
                 </div>
                 <div class="flex space-x-4">
                     <button class="text-text-medium hover:text-primary transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
                     </button>
                     <button class="text-text-medium hover:text-primary transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -106,7 +141,8 @@
                         <span class="text-lg font-bold text-primary">Marketra.ai</span>
                     </div>
                     <p class="text-text-medium max-w-sm">
-                        Experience a premium, AI-driven shopping experience tailored to your unique preferences. Calm, trustworthy, and professional.
+                        Experience a premium, AI-driven shopping experience tailored to your unique preferences. Calm,
+                        trustworthy, and professional.
                     </p>
                 </div>
                 <div>
@@ -131,5 +167,54 @@
             </div>
         </div>
     </footer>
+    <script>
+        function switchSection(sectionId, event) {
+            if (event) event.preventDefault();
+
+            const sections = ['home', 'features', 'recommendation', 'account'];
+            const currentActive = document.querySelector('.section-content.active');
+            const target = document.getElementById('section-' + sectionId);
+
+            if (!target || target === currentActive) return;
+
+            // Update Nav Links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active-nav');
+                link.classList.add('inactive-nav');
+            });
+            document.getElementById('nav-' + sectionId).classList.add('active-nav');
+            document.getElementById('nav-' + sectionId).classList.remove('inactive-nav');
+
+            if (currentActive) {
+                currentActive.classList.add('exiting');
+                setTimeout(() => {
+                    currentActive.classList.remove('active', 'exiting');
+                    target.classList.add('active');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 300);
+            } else {
+                target.classList.add('active');
+            }
+        }
+
+        // Initialize first section
+        document.addEventListener('DOMContentLoaded', () => {
+            switchSection('home');
+        });
+    </script>
+    <style>
+        .nav-link {
+            @apply transition-all duration-300 pb-1 border-b-2 border-transparent text-text-medium hover:text-primary;
+        }
+
+        .active-nav {
+            @apply text-primary border-primary;
+        }
+
+        .inactive-nav {
+            @apply text-text-medium border-transparent;
+        }
+    </style>
 </body>
+
 </html>
