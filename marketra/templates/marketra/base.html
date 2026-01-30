@@ -101,10 +101,10 @@
                     <span class="text-xl font-bold tracking-tight text-primary">Marketra</span>
                 </div>
                 <div class="hidden md:flex space-x-8 text-sm font-medium">
-                    <a href="#" onclick="switchSection('home', event)" id="nav-home"
-                        class="nav-link active-nav">Home</a>
-                    <a href="#" onclick="switchSection('features', event)" id="nav-features"
-                        class="nav-link">Featured</a>
+                    <a href="{% url 'marketra:home' %}" id="nav-home"
+                        class="nav-link {% if request.resolver_match.url_name == 'home' %}active-nav{% endif %}">Home</a>
+                    <a href="{% url 'marketra:featured' %}" id="nav-featured"
+                        class="nav-link {% if request.resolver_match.url_name == 'featured' %}active-nav{% endif %}">Featured</a>
                     <a href="#" onclick="switchSection('recommendation', event)" id="nav-recommendation"
                         class="nav-link">Recommendations</a>
                     {% if user.is_authenticated %}
@@ -210,7 +210,15 @@
             const currentActive = document.querySelector('.section-content.active');
             const target = document.getElementById('section-' + sectionId);
 
-            if (!target || target === currentActive) return;
+            if (!target) {
+                // Only redirect if this was a user-initiated click (event exists)
+                if (event) {
+                    window.location.href = "{% url 'marketra:home' %}?section=" + sectionId;
+                }
+                return;
+            }
+
+            if (target === currentActive) return;
 
             // Update Nav Links
             document.querySelectorAll('.nav-link').forEach(link => {
@@ -299,9 +307,18 @@
             return cookieValue;
         }
 
-        // Initialize first section
+        // Initialize first section or handle redirect
         document.addEventListener('DOMContentLoaded', () => {
-            switchSection('home');
+            const hasSections = document.querySelector('.section-content') !== null;
+            if (!hasSections) return; // Exit if on a standalone page
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const sectionParam = urlParams.get('section');
+            if (sectionParam) {
+                switchSection(sectionParam);
+            } else {
+                switchSection('home');
+            }
         });
     </script>
     <style>

@@ -97,3 +97,32 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect('marketra:home')
+from .models import Product, Category
+
+def featured_view(request):
+    # Fetch all categories
+    categories = Category.objects.all()
+    
+    # Get selected category from query params
+    selected_category_id = request.GET.get('category')
+    selected_category = None
+    
+    if selected_category_id:
+        selected_category = get_object_or_404(Category, id=selected_category_id)
+        featured_products = Product.objects.filter(category=selected_category).order_by('ai_rank')
+    else:
+        # Fetch all featured products
+        featured_products = Product.objects.filter(is_featured=True).order_by('ai_rank')
+        # If none marked as featured, fallback to top 12 by AI rank
+        if not featured_products.exists():
+            featured_products = Product.objects.all().order_by('ai_rank')[:12]
+    
+    collection_ids = request.session.get('collection', [])
+    
+    context = {
+        'categories': categories,
+        'featured_products': featured_products,
+        'selected_category': selected_category,
+        'collection_count': len(collection_ids),
+    }
+    return render(request, 'marketra/featured.html', context)
