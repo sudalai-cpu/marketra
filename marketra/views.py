@@ -127,3 +127,24 @@ def featured_view(request):
         'collection_count': len(collection_ids),
     }
     return render(request, 'marketra/featured.html', context)
+from django.db.models import Q
+
+def search_view(request):
+    query = request.GET.get('q', '')
+    results = []
+    
+    if query:
+        results = Product.objects.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(category__name__icontains=query)
+        ).distinct().order_by('ai_rank')
+    
+    collection_ids = request.session.get('collection', [])
+    
+    context = {
+        'query': query,
+        'results': results,
+        'collection_count': len(collection_ids),
+    }
+    return render(request, 'marketra/search.html', context)

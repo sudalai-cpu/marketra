@@ -114,13 +114,19 @@
                     {% endif %}
                 </div>
                 <div class="flex space-x-4 items-center">
+                    <form action="{% url 'marketra:search' %}" method="GET" class="relative group hidden sm:block">
+                        <input type="text" name="q" placeholder="Search products..."
+                            class="pl-10 pr-4 py-2 bg-secondary-bg border-none rounded-full text-sm focus:ring-2 focus:ring-primary/20 w-48 lg:w-64 transition-all duration-300">
+                        <button type="submit"
+                            class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-primary transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </button>
+                    </form>
+
                     {% if user.is_authenticated %}
-                    <button class="text-text-medium hover:text-primary transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </button>
                     <button onclick="switchSection('collection', event)"
                         class="text-text-medium hover:text-primary transition-colors relative">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,11 +137,12 @@
                             class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center {% if not collection_count %}hidden{% endif %}">
                             {{ collection_count|default:0 }}
                         </span>
-                        {% else %}
-                        <a href="{% url 'marketra:login' %}"
-                            class="text-sm font-medium text-text-dark hover:text-primary transition-colors">Sign In</a>
-                        <a href="{% url 'marketra:signup' %}" class="btn-primary py-2 px-4 text-xs">Sign Up</a>
-                        {% endif %}
+                    </button>
+                    {% else %}
+                    <a href="{% url 'marketra:login' %}"
+                        class="text-sm font-medium text-text-dark hover:text-primary transition-colors">Sign In</a>
+                    <a href="{% url 'marketra:signup' %}" class="btn-primary py-2 px-4 text-xs">Sign Up</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

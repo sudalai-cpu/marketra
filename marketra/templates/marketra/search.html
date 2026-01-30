@@ -1,0 +1,123 @@
+{% extends 'marketra/base.html' %}
+{% load static %}
+
+{% block title %}Search Results - Marketra.ai{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-secondary-bg py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Search Header -->
+        <div class="mb-12">
+            <h1 class="text-3xl font-extrabold text-text-dark mb-2">
+                {% if query %}
+                Search results for "{{ query }}"
+                {% else %}
+                Search Marketra
+                {% endif %}
+            </h1>
+            <p class="text-text-medium">
+                {% if results %}
+                We found {{ results.count }} premium products matching your criteria.
+                {% elif query %}
+                We couldn't find any exact matches for your search.
+                {% endif %}
+            </p>
+        </div>
+
+        {% if results %}
+        <!-- Results Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in results %}
+            <a href="{% url 'marketra:product_detail' product.pk %}"
+                class="card group cursor-pointer hover:no-underline relative overflow-hidden">
+                <div
+                    class="aspect-[4/5] bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-gray-100">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    {% elif product.image_url %}
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    {% else %}
+                    <span class="text-gray-300 font-medium">Product Image</span>
+                    {% endif %}
+                </div>
+
+                <div class="absolute top-4 left-4">
+                    <span class="badge-ai px-2 py-1">Rank #{{ product.ai_rank }}</span>
+                </div>
+
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs text-text-muted uppercase tracking-wider mb-1 block">
+                            {{ product.category.name|default:"Uncategorized" }}
+                        </span>
+                        <h3
+                            class="text-base font-semibold text-text-dark mb-1 group-hover:text-primary transition-colors">
+                            {{ product.name }}
+                        </h3>
+                    </div>
+                    <span class="text-primary font-bold">Rs.{{ product.price }}</span>
+                </div>
+
+                <div class="mt-4 flex items-center justify-between">
+                    <span
+                        class="text-[10px] {% if product.stock_status == 'In Stock' %}text-success{% else %}text-error{% endif %} font-bold italic">
+                        {{ product.stock_status }}
+                    </span>
+                    <div class="h-1 w-12 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary" style="width: {% widthratio 100 product.ai_rank 1 %}%"></div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% elif query %}
+        <!-- Empty State -->
+        <div class="bg-white rounded-2xl p-16 text-center border border-gray-100 shadow-soft max-w-2xl mx-auto mt-12">
+            <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-text-dark mb-4">No precise matches found</h2>
+            <p class="text-text-medium mb-10 leading-relaxed">
+                Our AI couldn't find exactly what you're looking for, but you might find these curated featured products
+                interesting.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="{% url 'marketra:featured' %}" class="btn-primary w-full sm:w-auto">Browse Featured</a>
+                <a href="{% url 'marketra:home' %}"
+                    class="px-6 py-2 border border-gray-200 rounded-md font-medium text-text-medium hover:bg-gray-50 transition-colors w-full sm:w-auto">Back
+                    to Home</a>
+            </div>
+        </div>
+        {% else %}
+        <!-- Initial State (if accessed directly without query) -->
+        <div class="max-w-xl mx-auto mt-20">
+            <form action="{% url 'marketra:search' %}" method="GET" class="relative group">
+                <input type="text" name="q" autofocus placeholder="What are you looking for?"
+                    class="w-full pl-14 pr-6 py-5 bg-white border-thin border-gray-100 rounded-2xl text-lg shadow-soft focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300">
+                <div
+                    class="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-primary transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </form>
+            <div class="mt-8 flex flex-wrap gap-3 justify-center">
+                <span class="text-sm text-text-muted py-1">Trending:</span>
+                <a href="?q=Modern"
+                    class="px-3 py-1 bg-white border border-gray-100 rounded-full text-xs hover:border-primary hover:text-primary transition-colors">Modern</a>
+                <a href="?q=Premium"
+                    class="px-3 py-1 bg-white border border-gray-100 rounded-full text-xs hover:border-primary hover:text-primary transition-colors">Premium</a>
+                <a href="?q=Office"
+                    class="px-3 py-1 bg-white border border-gray-100 rounded-full text-xs hover:border-primary hover:text-primary transition-colors">Office</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
