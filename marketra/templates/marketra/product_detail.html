@@ -103,7 +103,7 @@
                                 {{ product.name }}
                             </h1>
                             <div class="flex items-center space-x-6">
-                                <span class="text-3xl font-bold text-primary">${{ product.price }}</span>
+                                <span class="text-3xl font-bold text-primary">Rs.{{ product.price }}</span>
                                 {% if product.stock_status == 'In Stock' %}
                                 <span class="badge-success italic">{{ product.stock_status }}</span>
                                 {% else %}
@@ -178,20 +178,20 @@
                                 {% endif %}
                                 <div class="absolute top-2 right-2">
                                     <span
-                                        class="bg-white/90 backdrop-blur-md text-primary text-[8px] font-bold px-1.5 py-0.5 rounded shadow-sm">#{{
-                                        p.ai_rank }}</span>
+                                        class="bg-white/90 backdrop-blur-md text-primary text-[8px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                                        #{{ p.ai_rank }}</span>
                                 </div>
                             </div>
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <span class="text-xs text-text-muted uppercase tracking-wider mb-1 block">{{
-                                        p.category.name|default:"Uncategorized" }}</span>
+                                    <span class="text-xs text-text-muted uppercase tracking-wider mb-1 block">
+                                        {{ p.category.name|default:"Uncategorized" }}</span>
                                     <h3
                                         class="text-base font-semibold text-text-dark mb-1 group-hover:text-primary transition-colors">
                                         {{ p.name }}
                                     </h3>
                                 </div>
-                                <span class="text-primary font-bold">${{ p.price }}</span>
+                                <span class="text-primary font-bold">Rs.{{ p.price }}</span>
                             </div>
                         </a>
                         {% endfor %}
