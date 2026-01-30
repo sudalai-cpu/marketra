@@ -36,6 +36,7 @@ def product_detail(request, pk):
     
     context = {
         'product': product,
+        'categories': Category.objects.all(),
         'recommended_products': recommended_products,
         'in_collection': in_collection,
         'collection_count': len(collection_ids),
