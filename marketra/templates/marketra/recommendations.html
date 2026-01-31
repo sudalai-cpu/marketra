@@ -1,0 +1,75 @@
+{% extends 'marketra/base.html' %}
+{% load static %}
+
+{% block title %}AI Recommendations - Marketra.ai{% endblock %}
+
+{% block content %}
+<section class="py-20 bg-white min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+            <div>
+                <div class="flex items-center space-x-2 mb-2">
+                    <span class="badge-ai">AI-Powered</span>
+                    <h2 class="text-3xl font-bold">Recommended for You</h2>
+                </div>
+                <p class="text-text-medium max-w-md">Our AI analyzed your preferences to find these premium matches.
+                </p>
+            </div>
+            <a href="." class="text-primary font-medium hover:underline flex items-center group">
+                Refresh Suggestions
+                <svg class="w-4 h-4 ml-1 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                    </path>
+                </svg>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in recommended_products %}
+            <a href="{% url 'marketra:product_detail' product.pk %}"
+                class="card group cursor-pointer glow-subtle hover:border-primary/20 transition-all duration-300 hover:no-underline">
+                <div
+                    class="aspect-[4/5] bg-blue-50/30 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-blue-50 relative">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    {% elif product.image_url %}
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    {% else %}
+                    <span class="text-blue-100 font-medium">Product Image</span>
+                    {% endif %}
+                    <div class="absolute top-2 right-2">
+                        <span
+                            class="bg-white/80 backdrop-blur-sm text-[8px] font-bold px-1.5 py-0.5 rounded text-primary border border-blue-50">AI
+                            MATCH</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs text-text-muted uppercase tracking-wider mb-1 block">
+                            {{ product.category.name|default:"Uncategorized" }}
+                        </span>
+                        <h3
+                            class="text-base font-semibold text-text-dark mb-1 group-hover:text-primary transition-colors">
+                            {{ product.name }}
+                        </h3>
+                    </div>
+                    <span class="text-primary font-bold">Rs.{{ product.price }}</span>
+                </div>
+                <div class="flex items-center justify-between mt-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="badge-success text-[10px]">{{ product.stock_status }}</span>
+                    </div>
+                    <div class="text-[10px] text-primary bg-blue-50 px-2 py-0.5 rounded font-medium">
+                        98% Match
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

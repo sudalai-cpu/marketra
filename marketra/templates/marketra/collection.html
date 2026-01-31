@@ -1,0 +1,71 @@
+{% extends 'marketra/base.html' %}
+{% load static %}
+
+{% block title %}Your Collection - Marketra.ai{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 min-h-screen">
+    <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+        <div>
+            <h2 class="text-3xl font-bold mb-4">Your Collection</h2>
+            <p class="text-text-medium max-w-md">Items you've hand-picked for your premium business and lifestyle needs.
+            </p>
+        </div>
+        <a href="{% url 'marketra:featured' %}" class="btn-primary">Add More Items</a>
+    </div>
+
+    {% if collection_products %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {% for product in collection_products %}
+        <div class="card flex flex-col sm:flex-row gap-6 items-center group">
+            <div class="w-32 h-32 bg-gray-50 rounded-lg overflow-hidden border-thin border-gray-100 flex-shrink-0">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                {% elif product.image_url %}
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
+                    <span class="text-[10px]">No Image</span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="flex-grow text-center sm:text-left">
+                <span class="text-[10px] text-text-muted uppercase tracking-widest mb-1 block">
+                    {{ product.category.name|default:"Uncategorized" }}
+                </span>
+                <h3 class="text-lg font-bold text-text-dark mb-2">{{ product.name }}</h3>
+                <p class="text-primary font-bold mb-4">Rs.{{ product.price }}</p>
+                <div class="flex items-center justify-center sm:justify-start space-x-4">
+                    <a href="{% url 'marketra:product_detail' product.pk %}"
+                        class="text-sm font-medium text-primary hover:underline">View Product</a>
+                    <button onclick="removeFromCollection({{ product.pk }})"
+                        class="text-sm font-medium text-error hover:underline">Remove</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div
+        class="mt-16 p-8 bg-blue-50/50 rounded-2xl border border-blue-100 flex flex-col md:flex-row justify-between items-center">
+        <div>
+            <h3 class="text-xl font-bold text-primary mb-2">Ready to proceed?</h3>
+            <p class="text-text-medium">Your selection is saved. You can continue browsing or move to checkout.</p>
+        </div>
+        <button class="btn-primary mt-6 md:mt-0 px-12 py-4">Checkout (Mock)</button>
+    </div>
+    {% else %}
+    <div class="py-32 text-center">
+        <div
+            class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-100">
+            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Your collection is empty</h3>
+        <p class="text-text-muted mb-8">Start adding premium products to your hand-picked selection.</p>
+        <a href="{% url 'marketra:featured' %}" class="btn-primary">Browse Products</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

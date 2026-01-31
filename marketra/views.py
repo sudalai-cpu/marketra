@@ -148,3 +148,24 @@ def search_view(request):
         'collection_count': len(collection_ids),
     }
     return render(request, 'marketra/search.html', context)
+
+def collection_view(request):
+    collection_ids = request.session.get('collection', [])
+    collection_products = Product.objects.filter(id__in=collection_ids)
+    
+    context = {
+        'collection_products': collection_products,
+        'collection_count': len(collection_ids),
+    }
+    return render(request, 'marketra/collection.html', context)
+
+def recommendations_view(request):
+    recommended_products = Product.objects.all().order_by('?')[:12]  # Show more on standalone page
+    collection_ids = request.session.get('collection', [])
+    
+    context = {
+        'recommended_products': recommended_products,
+        'collection_count': len(collection_ids),
+    }
+    return render(request, 'marketra/recommendations.html', context)
+

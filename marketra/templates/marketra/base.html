@@ -105,11 +105,11 @@
                         class="nav-link {% if request.resolver_match.url_name == 'home' %}active-nav{% endif %}">Home</a>
                     <a href="{% url 'marketra:featured' %}" id="nav-featured"
                         class="nav-link {% if request.resolver_match.url_name == 'featured' %}active-nav{% endif %}">Featured</a>
-                    <a href="#" onclick="switchSection('recommendation', event)" id="nav-recommendation"
-                        class="nav-link">Recommendations</a>
+                    <a href="{% url 'marketra:recommendations' %}" id="nav-recommendation"
+                        class="nav-link {% if request.resolver_match.url_name == 'recommendations' %}active-nav{% endif %}">Recommendations</a>
                     {% if user.is_authenticated %}
-                    <a href="#" onclick="switchSection('collection', event)" id="nav-collection"
-                        class="nav-link">Collection</a>
+                    <a href="{% url 'marketra:collection' %}" id="nav-collection"
+                        class="nav-link {% if request.resolver_match.url_name == 'collection' %}active-nav{% endif %}">Collection</a>
                     {% endif %}
                 </div>
                 <div class="flex space-x-4 items-center">
@@ -126,7 +126,7 @@
                     </form>
 
                     {% if user.is_authenticated %}
-                    <button onclick="switchSection('collection', event)"
+                    <a href="{% url 'marketra:collection' %}"
                         class="text-text-medium hover:text-primary transition-colors relative">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -136,7 +136,7 @@
                             class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center {% if not collection_count %}hidden{% endif %}">
                             {{ collection_count|default:0 }}
                         </span>
-                    </button>
+                    </a>
 
                     <!-- User Profile Dropdown -->
                     <div class="relative items-center flex" id="user-menu-container">
@@ -223,9 +223,12 @@
                 <div>
                     <h4 class="mb-6">Shop</h4>
                     <ul class="space-y-4 text-sm text-text-medium">
-                        <li><a href="#" class="hover:text-primary transition-colors">All Products</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">AI Picks</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Categories</a></li>
+                        <li><a href="{% url 'marketra:featured' %}" class="hover:text-primary transition-colors">All
+                                Products</a></li>
+                        <li><a href="{% url 'marketra:home' %}?section=recommendation"
+                                class="hover:text-primary transition-colors">AI Picks</a></li>
+                        <li><a href="{% url 'marketra:featured' %}"
+                                class="hover:text-primary transition-colors">Categories</a></li>
                     </ul>
                 </div>
                 <div>
