@@ -110,7 +110,6 @@
                     {% if user.is_authenticated %}
                     <a href="#" onclick="switchSection('collection', event)" id="nav-collection"
                         class="nav-link">Collection</a>
-                    <a href="#" onclick="switchSection('account', event)" id="nav-account" class="nav-link">Account</a>
                     {% endif %}
                 </div>
                 <div class="flex space-x-4 items-center">
@@ -138,6 +137,40 @@
                             {{ collection_count|default:0 }}
                         </span>
                     </button>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="relative items-center flex" id="user-menu-container">
+                        <button id="user-menu-button"
+                            class="flex items-center text-text-medium hover:text-primary transition-colors focus:outline-none">
+                            <div
+                                class="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-primary group-hover:bg-primary/10 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                        </button>
+
+                        <div id="user-dropdown"
+                            class="hidden absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50 transform transition-all duration-200">
+                            <div class="px-4 py-2 border-b border-gray-50 mb-1">
+                                <p class="text-xs font-semibold text-text-dark truncate">{{ user.username }}</p>
+                                <p class="text-[10px] text-text-muted truncate">Premium Member</p>
+                            </div>
+                            <a href="#"
+                                class="block px-4 py-2 text-sm text-text-medium hover:bg-secondary-bg hover:text-primary transition-colors">Your
+                                Order</a>
+                            <div class="border-t border-gray-50 mt-1 pt-1">
+                                <form action="{% url 'marketra:logout' %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                        class="block w-full text-left px-4 py-2 text-sm text-error hover:bg-red-50 transition-colors">
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     {% else %}
                     <a href="{% url 'marketra:login' %}"
                         class="text-sm font-medium text-text-dark hover:text-primary transition-colors">Sign In</a>
@@ -213,7 +246,7 @@
         function switchSection(sectionId, event) {
             if (event) event.preventDefault();
 
-            const sections = ['home', 'features', 'recommendation', 'collection', 'account'];
+            const sections = ['home', 'features', 'recommendation', 'collection'];
             const currentActive = document.querySelector('.section-content.active');
             const target = document.getElementById('section-' + sectionId);
 
@@ -232,8 +265,11 @@
                 link.classList.remove('active-nav');
                 link.classList.add('inactive-nav');
             });
-            document.getElementById('nav-' + sectionId).classList.add('active-nav');
-            document.getElementById('nav-' + sectionId).classList.remove('inactive-nav');
+            const navLink = document.getElementById('nav-' + sectionId);
+            if (navLink) {
+                navLink.classList.add('active-nav');
+                navLink.classList.remove('inactive-nav');
+            }
 
             if (currentActive) {
                 currentActive.classList.add('exiting');
@@ -246,6 +282,25 @@
                 target.classList.add('active');
             }
         }
+
+        // Dropdown Toggle Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const userMenuBtn = document.getElementById('user-menu-button');
+            const userDropdown = document.getElementById('user-dropdown');
+
+            if (userMenuBtn && userDropdown) {
+                userMenuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!userDropdown.contains(e.target) && !userMenuBtn.contains(e.target)) {
+                        userDropdown.classList.add('hidden');
+                    }
+                });
+            }
+        });
 
         async function addToCollection(productId, btn) {
             const originalText = btn.innerText;
