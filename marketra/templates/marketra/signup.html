@@ -4,50 +4,63 @@
 {% block title %}Sign Up - Marketra.ai{% endblock %}
 
 {% block content %}
-<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-secondary-bg">
-    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-soft border border-gray-100">
+<div class="min-h-[90vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50">
+    <div class="max-w-md w-full bg-white p-8 md:p-10 rounded-3xl shadow-soft border border-gray-100">
+        
         <div class="text-center">
-            <div class="mx-auto h-12 w-12 bg-primary rounded-xl flex items-center justify-center mb-4">
-                <span class="text-white font-bold text-xl">M</span>
+            <div class="mx-auto h-14 w-14 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-primary/20">
+                <span class="text-white font-black text-2xl tracking-tighter">M</span>
             </div>
-            <h2 class="text-3xl font-extrabold text-text-dark">Create your account</h2>
+            <h2 class="text-3xl font-extrabold text-text-dark tracking-tight">Create Account</h2>
             <p class="mt-2 text-sm text-text-muted">
-                Join Marketra for a premium AI shopping experience
+                Join <span class="text-primary font-semibold">Marketra.ai</span> for a curated experience.
             </p>
         </div>
-        <form class="mt-8 space-y-6" method="POST">
+
+        <form class="mt-8 space-y-5" method="POST">
             {% csrf_token %}
+            
             <div class="space-y-4">
                 {% for field in form %}
-                <div>
-                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-text-medium mb-1">
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="block text-xs font-bold text-text-dark uppercase tracking-wider mb-1.5 ml-1">
                         {{ field.label }}
                     </label>
                     <div class="relative">
                         {{ field }}
                     </div>
+                    
                     {% if field.errors %}
                         {% for error in field.errors %}
-                        <p class="text-error text-xs mt-1">{{ error }}</p>
+                        <p class="text-error text-xs mt-1.5 flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                            {{ error }}
+                        </p>
                         {% endfor %}
                     {% endif %}
+                    
                     {% if field.help_text %}
-                    <p class="text-text-muted text-[10px] mt-1">{{ field.help_text|safe }}</p>
+                    <p class="text-gray-400 text-[10px] mt-1.5 leading-relaxed px-1">
+                        {{ field.help_text|safe }}
+                    </p>
                     {% endif %}
                 </div>
                 {% endfor %}
             </div>
 
-            <div>
-                <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-md text-white bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 shadow-soft">
-                    Create Account
+            <div class="pt-2">
+                <button type="submit" class="w-full flex items-center justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-300 shadow-lg shadow-primary/10">
+                    Get Started
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
                 </button>
             </div>
             
-            <div class="text-center mt-4">
+            <div class="text-center mt-6">
                 <p class="text-sm text-text-medium">
                     Already have an account? 
-                    <a href="{% url 'marketra:login' %}" class="font-medium text-primary hover:underline">Sign In</a>
+                    <a href="{% url 'marketra:login' %}" class="font-bold text-primary hover:text-blue-700 transition-colors">Sign In</a>
                 </p>
             </div>
         </form>
@@ -55,12 +68,30 @@
 </div>
 
 <style>
-    /* Style Django's default form fields to match Tailwind */
-    input[type="text"], input[type="password"], input[type="email"] {
-        @apply block w-full px-4 py-3 border border-gray-200 rounded-md text-text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 sm:text-sm;
+    /* Direct CSS instead of @apply for template safety */
+    input[type="text"], 
+    input[type="password"], 
+    input[type="email"],
+    input[type="number"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        color: #1f2937;
+        font-size: 0.875rem;
+        transition: all 0.2s;
     }
-    ul.errorlist {
-        @apply hidden; /* Hide the default error list as we handle it per field */
+
+    input:focus {
+        outline: none;
+        border-color: #2563eb; /* primary color */
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Hide Django's default error list */
+    .errorlist {
+        display: none;
     }
 </style>
 {% endblock %}

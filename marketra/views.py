@@ -22,6 +22,7 @@ def home(request):
         'recommended_products': recommended_products,
         'collection_products': collection_products,
         'collection_count': len(collection_ids),
+        'collection_ids': collection_ids,
     }
     return render(request, 'marketra/index.html', context)
 
@@ -40,6 +41,7 @@ def product_detail(request, pk):
         'recommended_products': recommended_products,
         'in_collection': in_collection,
         'collection_count': len(collection_ids),
+        'collection_ids': collection_ids,
     }
     return render(request, 'marketra/product_detail.html', context)
 
@@ -125,6 +127,7 @@ def featured_view(request):
         'featured_products': featured_products,
         'selected_category': selected_category,
         'collection_count': len(collection_ids),
+        'collection_ids': collection_ids,
     }
     return render(request, 'marketra/featured.html', context)
 from django.db.models import Q
@@ -146,6 +149,7 @@ def search_view(request):
         'query': query,
         'results': results,
         'collection_count': len(collection_ids),
+        'collection_ids': collection_ids,
     }
     return render(request, 'marketra/search.html', context)
 
@@ -156,6 +160,7 @@ def collection_view(request):
     context = {
         'collection_products': collection_products,
         'collection_count': len(collection_ids),
+        'collection_ids': collection_ids,
     }
     return render(request, 'marketra/collection.html', context)
 
@@ -166,6 +171,7 @@ def recommendations_view(request):
     context = {
         'recommended_products': recommended_products,
         'collection_count': len(collection_ids),
+        'collection_ids': collection_ids,
     }
     return render(request, 'marketra/recommendations.html', context)
 
