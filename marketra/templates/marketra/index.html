@@ -4,7 +4,8 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-                <span class="inline-block py-1 px-3 rounded-full bg-blue-50 text-primary text-xs font-semibold mb-6 tracking-wide uppercase">
+                <span
+                    class="inline-block py-1 px-3 rounded-full bg-blue-50 text-primary text-xs font-semibold mb-6 tracking-wide uppercase">
                     Powered E-commerce
                 </span>
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-8 leading-tight">
@@ -16,21 +17,25 @@
                 </p>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                     <a href="{% url 'marketra:featured' %}" class="btn-primary inline-block text-center">Shop Now</a>
-                    <button class="px-6 py-2 border-thin border-gray-200 rounded-md font-medium text-text-medium hover:bg-gray-50 transition-colors">
+                    <button onclick="document.getElementById('how-it-works').scrollIntoView({behavior: 'smooth'})"
+                        class="px-6 py-2 border-thin border-gray-200 rounded-md font-medium text-text-medium hover:bg-gray-50 transition-colors">
                         Learn How It Works
                     </button>
                 </div>
             </div>
             <div class="relative">
-                <div class="aspect-square bg-blue-50/50 rounded-2xl overflow-hidden flex items-center justify-center border-thin border-blue-100 shadow-soft">
+                <div
+                    class="aspect-square bg-blue-50/50 rounded-2xl overflow-hidden flex items-center justify-center border-thin border-blue-100 shadow-soft">
                     <div class="text-center p-8">
                         <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                             <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Smart Curations</h3>
-                        <p class="text-text-muted text-sm">Your driven selection updates in real-time based on your preferences.</p>
+                        <p class="text-text-muted text-sm">Your driven selection updates in real-time based on your
+                            preferences.</p>
                     </div>
                 </div>
                 <div class="absolute -top-4 -right-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl"></div>
@@ -39,7 +44,7 @@
         </div>
     </section>
 
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+    <section id="how-it-works" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         <div class="max-w-3xl mx-auto">
             <h2 class="text-3xl font-bold mb-6">Trustworthy AI Recommendations</h2>
             <p class="text-text-medium mb-10 leading-relaxed text-lg">
@@ -70,11 +75,14 @@
             <div class="flex flex-col md:flex-row justify-between items-end mb-12">
                 <div>
                     <h2 class="text-3xl font-bold mb-4">Featured Excellence</h2>
-                    <p class="text-text-medium max-w-md">Our hand-picked selection of premium business and lifestyle essentials.</p>
+                    <p class="text-text-medium max-w-md">Our hand-picked selection of premium business and lifestyle
+                        essentials.</p>
                 </div>
-                <a href="{% url 'marketra:featured' %}" class="text-primary font-medium hover:underline flex items-center group">
+                <a href="{% url 'marketra:featured' %}"
+                    class="text-primary font-medium hover:underline flex items-center group">
                     View All Collection
-                    <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </a>
@@ -82,13 +90,17 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {% for product in featured_products %}
-                <div class="card group relative bg-white p-4 rounded-xl border border-gray-100 hover:shadow-md transition-all">
+                <div
+                    class="card group relative bg-white p-4 rounded-xl border border-gray-100 hover:shadow-md transition-all">
                     <a href="{% url 'marketra:product_detail' product.pk %}" class="block hover:no-underline">
-                        <div class="aspect-[4/5] bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-gray-100">
+                        <div
+                            class="aspect-[4/5] bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-gray-100">
                             {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             {% elif product.image_url %}
-                            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             {% else %}
                             <span class="text-gray-300 font-medium">Product Image</span>
                             {% endif %}
@@ -98,7 +110,8 @@
                                 <span class="text-[10px] text-text-muted uppercase tracking-wider mb-1 block">
                                     {{ product.category.name|default:"Uncategorized" }}
                                 </span>
-                                <h3 class="text-base font-semibold text-text-dark mb-1 group-hover:text-primary transition-colors line-clamp-1">
+                                <h3
+                                    class="text-base font-semibold text-text-dark mb-1 group-hover:text-primary transition-colors line-clamp-1">
                                     {{ product.name }}
                                 </h3>
                             </div>
@@ -112,13 +125,13 @@
                     {% if user.is_authenticated %}
                     <div class="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
                         <span class="badge-success text-[10px]">{{ product.stock_status }}</span>
-                        <button onclick="addToCollection({{ product.pk }}, this)" 
-                                class="text-xs font-semibold hover:underline flex items-center {% if product.id in collection_ids %}text-success{% else %}text-primary{% endif %}"
-                                {% if product.id in collection_ids %}disabled{% endif %}>
+                        <button onclick="addToCollection({{ product.pk }}, this)"
+                            class="text-xs font-semibold hover:underline flex items-center {% if product.id in collection_ids %}text-success{% else %}text-primary{% endif %}"
+                            {% if product.id in collection_ids %}disabled{% endif %}>
                             {% if product.id in collection_ids %}
-                                Added
+                            Added
                             {% else %}
-                                Add to Collection
+                            Add to Collection
                             {% endif %}
                         </button>
                     </div>
