@@ -345,10 +345,19 @@
                 const data = await response.json();
                 if (data.status === 'success') {
                     const badge = document.getElementById('collection-badge');
-                    badge.innerText = data.count;
-                    if (data.count === 0) badge.classList.add('hidden');
-                    // Refresh if in collection view
-                    if (document.getElementById('section-collection').classList.contains('active')) {
+                    if (badge) {
+                        badge.innerText = data.count;
+                        if (data.count === 0) badge.classList.add('hidden');
+                    }
+
+                    // Remove the product card from the DOM
+                    const productCard = document.getElementById(`product-card-${productId}`);
+                    if (productCard) {
+                        productCard.remove();
+                    }
+
+                    // Reload if collection is empty to deal with empty state UI
+                    if (data.count === 0) {
                         location.reload();
                     }
                 }
