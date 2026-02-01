@@ -113,17 +113,19 @@
                     </div>
                     
                     <input type="text" name="q" autofocus placeholder="Search premium AI-curated products..."
-                        class="block w-full pl-16 pr-6 py-6 bg-white border border-gray-100 rounded-3xl text-lg shadow-soft focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 outline-none appearance-none">
+                        class="block w-full pl-16 pr-6 py-6 bg-white border border-gray-100 rounded-3xl text-lg shadow-soft focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 outline-none appearance-none relative z-0">
                 </div>
             </form>
 
             <div class="mt-10 flex flex-wrap gap-3 justify-center">
                 <span class="text-sm text-text-muted py-1.5 font-medium">Trending searches:</span>
-                {% for tag in "Modern Premium Minimalist Luxury Office".split %}
-                <a href="?q={{ tag }}" class="px-5 py-1.5 bg-white border border-gray-100 rounded-full text-xs font-bold text-text-medium hover:border-primary hover:text-primary transition-all shadow-sm hover:shadow-md">{{ tag }}</a>
-                {% endfor %}
+                
+                <a href="?q=Modern" class="px-5 py-1.5 bg-white border border-gray-100 rounded-full text-xs font-bold text-text-medium hover:border-primary hover:text-primary transition-all shadow-sm hover:shadow-md">Modern</a>
+                <a href="?q=Premium" class="px-5 py-1.5 bg-white border border-gray-100 rounded-full text-xs font-bold text-text-medium hover:border-primary hover:text-primary transition-all shadow-sm hover:shadow-md">Premium</a>
+                <a href="?q=Minimalist" class="px-5 py-1.5 bg-white border border-gray-100 rounded-full text-xs font-bold text-text-medium hover:border-primary hover:text-primary transition-all shadow-sm hover:shadow-md">Minimalist</a>
+                <a href="?q=Luxury" class="px-5 py-1.5 bg-white border border-gray-100 rounded-full text-xs font-bold text-text-medium hover:border-primary hover:text-primary transition-all shadow-sm hover:shadow-md">Luxury</a>
+                <a href="?q=Office" class="px-5 py-1.5 bg-white border border-gray-100 rounded-full text-xs font-bold text-text-medium hover:border-primary hover:text-primary transition-all shadow-sm hover:shadow-md">Office</a>
             </div>
-        </div>
         {% endif %}
     </div>
 </div>
