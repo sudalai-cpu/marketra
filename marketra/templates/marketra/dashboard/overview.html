@@ -1,0 +1,56 @@
+{% extends 'marketra/dashboard/dashboard_base.html' %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    <div class="card bg-gradient-to-r from-primary to-blue-600 text-white border-none relative overflow-hidden">
+        <div class="absolute right-0 top-0 opacity-10 transform translate-x-10 -translate-y-10">
+            <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+        </div>
+        <div class="relative z-10">
+            <h2 class="text-2xl font-bold text-white mb-2">Welcome back, {{ user.username }}!</h2>
+            <p class="text-blue-100 mb-6 max-w-lg">Manage your profile, track your orders, and fine-tune your AI style preferences all in one place.</p>
+            <div class="flex space-x-3">
+                <a href="{% url 'marketra:style_profile' %}" class="px-4 py-2 bg-white text-primary font-medium rounded-md hover:bg-blue-50 transition-colors shadow-sm">Update Style Profile</a>
+                <a href="{% url 'marketra:featured' %}" class="px-4 py-2 bg-blue-700 bg-opacity-50 text-white font-medium rounded-md hover:bg-opacity-70 transition-colors">Browse Shop</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="card">
+            <div class="flex items-center space-x-3 mb-2">
+                <div class="p-2 bg-purple-50 rounded-lg text-purple-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                </div>
+                <h3 class="text-sm font-medium text-text-muted">Active Orders</h3>
+            </div>
+            <p class="text-2xl font-bold text-text-dark">0</p>
+        </div>
+        <div class="card">
+            <div class="flex items-center space-x-3 mb-2">
+                <div class="p-2 bg-pink-50 rounded-lg text-pink-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                </div>
+                <h3 class="text-sm font-medium text-text-muted">Wishlist Items</h3>
+            </div>
+            <p class="text-2xl font-bold text-text-dark">{{ user.wishlist.products.count|default:0 }}</p>
+        </div>
+        <div class="card">
+            <div class="flex items-center space-x-3 mb-2">
+                <div class="p-2 bg-green-50 rounded-lg text-green-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="text-sm font-medium text-text-muted">AI Readiness</h3>
+            </div>
+            {% if user.style_profile %}
+            <p class="text-2xl font-bold text-text-dark">Ready</p>
+            {% else %}
+            <p class="text-2xl font-bold text-text-muted text-lg">Incomplete</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

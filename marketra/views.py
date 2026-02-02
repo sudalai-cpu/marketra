@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
-from .models import Product
+from .models import Product, Address, StyleProfile, Wishlist
+from django.contrib.auth.decorators import login_required
 import random
 
 def home(request):
@@ -175,3 +176,65 @@ def recommendations_view(request):
     }
     return render(request, 'marketra/recommendations.html', context)
 
+@login_required
+def dashboard(request):
+    return render(request, 'marketra/dashboard/overview.html')
+
+@login_required
+def profile_view(request):
+    addresses = request.user.addresses.all()
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        street = request.POST.get('street_address')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        zip_code = request.POST.get('zip_code')
+        if name and street and city:
+            Address.objects.create(
+                user=request.user,
+                name=name,
+                street_address=street,
+                city=city,
+                state=state,
+                zip_code=zip_code
+            )
+            messages.success(request, "Address added successfully.")
+            return redirect('marketra:profile')
+            
+    return render(request, 'marketra/dashboard/profile.html', {'addresses': addresses})
+
+@login_required
+def orders_view(request):
+    # Retrieve user's past orders (Placeholder if Order model not implemented yet)
+    return render(request, 'marketra/dashboard/orders.html')
+
+@login_required
+def wishlist_view(request):
+    wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+    return render(request, 'marketra/dashboard/wishlist.html', {'wishlist': wishlist})
+
+@login_required
+def style_profile_view(request):
+    profile, created = StyleProfile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        profile.favorite_colors = request.POST.get('favorite_colors', '')
+        profile.fashion_goals = request.POST.get('fashion_goals', '')
+        
+        # Handle simple size inputs for now - expecting form data keys like 'size_top'
+        sizes = profile.sizes or {}
+        if 'size_top' in request.POST:
+            sizes['top'] = request.POST['size_top']
+        if 'size_shoe' in request.POST:
+            sizes['shoe'] = request.POST['size_shoe']
+        profile.sizes = sizes
+        
+        # Simple keyword parsing from a text input
+        keywords_raw = request.POST.get('style_keywords', '')
+        if keywords_raw:
+            profile.style_keywords = [k.strip() for k in keywords_raw.split(',')]
+            
+        profile.save()
+        messages.success(request, "Style profile updated.")
+        return redirect('marketra:style_profile')
+        
+    return render(request, 'marketra/dashboard/ai_style.html', {'profile': profile})

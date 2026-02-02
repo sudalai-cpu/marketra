@@ -1,0 +1,91 @@
+{% extends 'marketra/dashboard/dashboard_base.html' %}
+
+{% block dashboard_content %}
+<div class="space-y-8">
+    <div>
+        <h2 class="text-xl font-bold text-text-dark mb-4">Personal Profile Hub</h2>
+        <div class="card">
+            <h3 class="font-medium text-text-dark mb-4">Saved Addresses</h3>
+
+            {% if addresses %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {% for address in addresses %}
+                <div
+                    class="border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors cursor-pointer relative group">
+                    <div
+                        class="absolute top-4 right-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                            </path>
+                        </svg>
+                    </div>
+                    {% if address.is_default %}
+                    <span class="badge-success mb-2 inline-block">Default</span>
+                    {% endif %}
+                    <p class="font-semibold text-text-dark">{{ address.name }}</p>
+                    <p class="text-sm text-text-medium mt-1">{{ address.street_address }}</p>
+                    <p class="text-sm text-text-medium">{{ address.city }}, {{ address.state }} {{ address.zip_code }}
+                    </p>
+                    <p class="text-sm text-text-muted mt-1">{{ address.country }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8 bg-secondary-bg rounded-lg border border-dashed border-gray-300 mb-6">
+                <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <p class="text-text-muted text-sm">No addresses saved yet.</p>
+            </div>
+            {% endif %}
+
+            <button onclick="document.getElementById('add-address-form').classList.toggle('hidden')"
+                class="btn-primary w-full md:w-auto text-sm">
+                + Add New Address
+            </button>
+
+            <!-- Inline Add Form -->
+            <div id="add-address-form" class="hidden mt-6 pt-6 border-t border-gray-100">
+                <h4 class="font-medium text-text-dark mb-4">Add New Address</h4>
+                <form action="{% url 'marketra:profile' %}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% csrf_token %}
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-text-medium mb-1">Full Name</label>
+                        <input type="text" name="name" required
+                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-text-medium mb-1">Street Address</label>
+                        <input type="text" name="street_address" required
+                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-text-medium mb-1">City</label>
+                        <input type="text" name="city" required
+                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-text-medium mb-1">State / Province</label>
+                        <input type="text" name="state" required
+                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-text-medium mb-1">Zip / Postal Code</label>
+                        <input type="text" name="zip_code" required
+                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border">
+                    </div>
+                    <div class="col-span-2 mt-2">
+                        <button type="submit"
+                            class="bg-gray-800 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors text-sm font-medium">Save
+                            Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

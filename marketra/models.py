@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -28,3 +29,38 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
+    name = models.CharField(max_length=100, help_text="Full name for delivery")
+    street_address = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    zip_code = models.CharField(max_length=20)
+    country = models.CharField(max_length=100, default='United States')
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} - {self.street_address}"
+
+    class Meta:
+        verbose_name_plural = "Addresses"
+
+class StyleProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='style_profile')
+    # Using JSONField for flexibility with AI data points
+    style_keywords = models.JSONField(default=list, blank=True, help_text="List of AI-derived style keywords")
+    sizes = models.JSONField(default=dict, blank=True, help_text="User sizes (e.g., {'top': 'M', 'shoe': '10'})")
+    favorite_colors = models.CharField(max_length=255, blank=True)
+    fashion_goals = models.TextField(blank=True, help_text="User's description of their style goals")
+
+    def __str__(self):
+        return f"Style Profile for {self.user.username}"
+
+class Wishlist(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wishlist')
+    products = models.ManyToManyField(Product, related_name='wishlisted_by', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Wishlist for {self.user.username}"

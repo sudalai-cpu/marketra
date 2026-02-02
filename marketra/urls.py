@@ -15,4 +15,9 @@ urlpatterns = [
     path('search/', views.search_view, name='search'),
     path('collection/', views.collection_view, name='collection'),
     path('recommendations/', views.recommendations_view, name='recommendations'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/profile/', views.profile_view, name='profile'),
+    path('dashboard/orders/', views.orders_view, name='orders'),
+    path('dashboard/wishlist/', views.wishlist_view, name='wishlist'),
+    path('dashboard/style-profile/', views.style_profile_view, name='style_profile'),
 ]
