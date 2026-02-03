@@ -199,12 +199,20 @@ def search_view(request):
     return render(request, 'marketra/search.html', context)
 
 def collection_view(request):
-    collection_ids = request.session.get('collection', [])
-    collection_products = Product.objects.filter(id__in=collection_ids)
+    collection_products = []
+    collection_ids = []
+    
+    if request.user.is_authenticated:
+        if hasattr(request.user, 'collection'):
+            collection_products = request.user.collection.products.all()
+            collection_ids = list(collection_products.values_list('id', flat=True))
+    else:
+        collection_ids = request.session.get('collection', [])
+        collection_products = Product.objects.filter(id__in=collection_ids)
     
     context = {
         'collection_products': collection_products,
-        'collection_count': len(collection_ids),
+        'collection_count': len(collection_products),
         'collection_ids': collection_ids,
     }
     return render(request, 'marketra/collection.html', context)
