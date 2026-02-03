@@ -104,15 +104,25 @@ def toggle_collection(request, pk):
 
 def remove_from_collection(request, pk):
     if request.method == 'POST':
-        collection = request.session.get('collection', [])
-        if pk in collection:
-            collection.remove(pk)
-            request.session['collection'] = collection
+        count = 0
+        if request.user.is_authenticated:
+            product = get_object_or_404(Product, pk=pk)
+            collection_obj, created = Collection.objects.get_or_create(user=request.user)
+            if collection_obj.products.filter(pk=pk).exists():
+                collection_obj.products.remove(product)
+            count = collection_obj.products.count()
+        else:
+            collection = request.session.get('collection', [])
+            if pk in collection:
+                collection.remove(pk)
+                request.session['collection'] = collection
+                request.session.modified = True
+            count = len(collection)
             
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'status': 'success', 'count': len(collection)})
+            return JsonResponse({'status': 'success', 'count': count})
             
-    return redirect('marketra:home')
+    return redirect('marketra:collection')
 
 def signup_view(request):
     if request.method == 'POST':

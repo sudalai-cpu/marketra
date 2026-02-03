@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-9i2mwt!&e057mdkyij@-z^_=l40r!rlyu!&63s=4z7)xpkz(s0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['marketra.pythonanywhere.com']
 
 
 # Application definition
@@ -62,6 +62,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'marketra.context_processors.collection_status',
             ],
         },
     },
