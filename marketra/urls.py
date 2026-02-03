@@ -6,7 +6,7 @@ app_name = 'marketra'
 urlpatterns = [
     path('', views.home, name='home'),
     path('product/<int:pk>/', views.product_detail, name='product_detail'),
-    path('collection/add/<int:pk>/', views.add_to_collection, name='add_to_collection'),
+    path('collection/toggle/<int:pk>/', views.toggle_collection, name='toggle_collection'),
     path('collection/remove/<int:pk>/', views.remove_from_collection, name='remove_from_collection'),
     path('signup/', views.signup_view, name='signup'),
     path('login/', views.login_view, name='login'),
@@ -19,7 +19,7 @@ urlpatterns = [
     path('dashboard/profile/', views.profile_view, name='profile'),
     path('dashboard/orders/', views.orders_view, name='orders'),
     path('dashboard/wishlist/', views.wishlist_view, name='wishlist'),
-    path('dashboard/wishlist/add/<int:pk>/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('dashboard/wishlist/toggle/<int:pk>/', views.toggle_wishlist, name='toggle_wishlist'),
     path('dashboard/wishlist/remove/<int:pk>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('dashboard/style-profile/', views.style_profile_view, name='style_profile'),
 ]

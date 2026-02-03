@@ -134,10 +134,43 @@
 
                         <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                             <button id="add-to-collection-btn" onclick="addToCollection({{ product.pk }}, this)"
-                                class="btn-primary flex-grow text-center py-4 text-lg disabled:bg-gray-200 disabled:text-text-muted disabled:cursor-not-allowed"
-                                {% if in_collection %}disabled{% endif %}>
+                                class="btn-primary flex-grow text-center py-4 text-lg transition-colors">
                                 {% if in_collection %} Added to Collection {% else %} Add to Collection {% endif %}
                             </button>
+
+                            <script>
+                                function addToCollection(productId, btn) {
+                                    fetch(`/collection/toggle/${productId}/`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRFToken': '{{ csrf_token }}',
+                                            'X-Requested-With': 'XMLHttpRequest'
+                                        }
+                                    })
+                                        .then(response => {
+                                            if (response.redirected) {
+                                                window.location.href = response.url; // Redirect to login if needed
+                                                return;
+                                            }
+                                            if (!response.ok) {
+                                                throw new Error('Network response was not ok');
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            if (data && data.status === 'success') {
+                                                if (data.action === 'added') {
+                                                    btn.innerText = "Added to Collection";
+                                                } else if (data.action === 'removed') {
+                                                    btn.innerText = "Add to Collection";
+                                                }
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                        });
+                                }
+                            </script>
                             <button id="wishlist-btn-{{ product.pk }}" onclick="addToWishlist({{ product.pk }}, this)"
                                 class="px-8 py-4 border rounded-md font-medium transition-colors
                                 {% if in_wishlist %}
@@ -161,7 +194,7 @@
 
                         <script>
                             function addToWishlist(productId, btn) {
-                                fetch(`/dashboard/wishlist/add/${productId}/`, {
+                                fetch(`/dashboard/wishlist/toggle/${productId}/`, {
                                     method: 'POST',
                                     headers: {
                                         'X-CSRFToken': '{{ csrf_token }}',
@@ -180,19 +213,24 @@
                                     })
                                     .then(data => {
                                         if (data && data.status === 'success') {
-                                            // Update button style to 'Saved' state
-                                            btn.className = "px-8 py-4 border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 rounded-md font-medium transition-colors";
-                                            btn.innerHTML = `
-                                        <div class="flex items-center">
-                                            <svg class="w-5 h-5 mr-2 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                            Saved
-                                        </div>
-                                    `;
+                                            if (data.action === 'added') {
+                                                // Update button style to 'Saved' state
+                                                btn.className = "px-8 py-4 border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 rounded-md font-medium transition-colors";
+                                                btn.innerHTML = `
+                                            <div class="flex items-center">
+                                                <svg class="w-5 h-5 mr-2 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                                Saved
+                                            </div>
+                                        `;
+                                            } else if (data.action === 'removed') {
+                                                // Revert button style to 'Wishlist' state
+                                                btn.className = "px-8 py-4 border border-gray-200 text-text-medium hover:bg-gray-50 rounded-md font-medium transition-colors";
+                                                btn.innerHTML = "Wishlist";
+                                            }
                                         }
                                     })
                                     .catch(error => {
                                         console.error('Error:', error);
-                                        // Fallback to non-AJAX specific redirect if needed, or alert user
                                     });
                             }
                         </script>
@@ -226,8 +264,8 @@
                                 </div>
                                 <div class="flex justify-between items-start">
                                     <div>
-                                        <span class="text-[10px] text-text-muted uppercase tracking-wider mb-1 block">{{
-                                            p.category.name|default:"Uncategorized" }}</span>
+                                        <span class="text-[10px] text-text-muted uppercase tracking-wider mb-1 block">
+                                            {{ p.category.name|default:"Uncategorized" }}</span>
                                         <h3
                                             class="text-sm font-semibold text-text-dark group-hover:text-primary transition-colors line-clamp-1">
                                             {{ p.name }}</h3>

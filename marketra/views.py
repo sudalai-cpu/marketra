@@ -47,15 +47,20 @@ def product_detail(request, pk):
     }
     return render(request, 'marketra/product_detail.html', context)
 
-def add_to_collection(request, pk):
+def toggle_collection(request, pk):
     if request.method == 'POST':
         collection = request.session.get('collection', [])
-        if pk not in collection:
+        if pk in collection:
+            collection.remove(pk)
+            status = 'removed'
+        else:
             collection.append(pk)
-            request.session['collection'] = collection
+            status = 'added'
+        
+        request.session['collection'] = collection
         
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'status': 'success', 'count': len(collection)})
+            return JsonResponse({'status': 'success', 'action': status, 'count': len(collection)})
             
     return redirect('marketra:home')
 
@@ -241,14 +246,20 @@ def style_profile_view(request):
     return render(request, 'marketra/dashboard/ai_style.html', {'profile': profile})
 
 @login_required
-def add_to_wishlist(request, pk):
+def toggle_wishlist(request, pk):
     if request.method == 'POST':
         product = get_object_or_404(Product, pk=pk)
         wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-        wishlist.products.add(product)
+        
+        if wishlist.products.filter(pk=pk).exists():
+            wishlist.products.remove(product)
+            status = 'removed'
+        else:
+            wishlist.products.add(product)
+            status = 'added'
         
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'status': 'success', 'message': 'Added to wishlist'})
+            return JsonResponse({'status': 'success', 'action': status, 'message': f'Product {status}'})
             
     return redirect('marketra:product_detail', pk=pk)
 
