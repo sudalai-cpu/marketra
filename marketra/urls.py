@@ -19,5 +19,7 @@ urlpatterns = [
     path('dashboard/profile/', views.profile_view, name='profile'),
     path('dashboard/orders/', views.orders_view, name='orders'),
     path('dashboard/wishlist/', views.wishlist_view, name='wishlist'),
+    path('dashboard/wishlist/add/<int:pk>/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('dashboard/wishlist/remove/<int:pk>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('dashboard/style-profile/', views.style_profile_view, name='style_profile'),
 ]

@@ -2,109 +2,100 @@
 
 {% block dashboard_content %}
 <div class="space-y-8">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h2 class="text-xl font-bold text-text-dark">AI Style Profile</h2>
-            <p class="text-sm text-text-muted mt-1">Configure your digital twin for hyper-personalized recommendations.
-            </p>
+            <h2 class="text-2xl font-bold text-text-dark">AI Style Profile</h2>
+            <p class="text-sm text-text-muted mt-1">Configure your digital twin for hyper-personalized recommendations.</p>
         </div>
-        <div class="badge-ai text-sm px-3 py-1">Powered by Neural Engine</div>
+        <div class="badge-ai text-sm px-3 py-1 bg-blue-50 text-primary border border-blue-100 rounded-full w-fit">
+            <span class="flex items-center">
+                <span class="relative flex h-2 w-2 mr-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                Powered by Neural Engine
+            </span>
+        </div>
     </div>
 
     <form action="{% url 'marketra:style_profile' %}" method="POST" class="space-y-6">
         {% csrf_token %}
 
-        <!-- Style Keywords -->
-        <div class="card relative overflow-hidden group">
-            <div
-                class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-50 transition-opacity duration-500 pointer-events-none">
-            </div>
-            <h3 class="font-medium text-text-dark mb-4 flex items-center">
+        <div class="card relative overflow-hidden group transition-all hover:shadow-md">
+            <h3 class="font-semibold text-text-dark mb-4 flex items-center">
                 <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                 </svg>
                 Style Keywords
             </h3>
-            <p class="text-xs text-text-muted mb-4">Enter keywords that describe your aesthetic (e.g., 'Minimalist',
-                'Streetwear', 'Boho'). Separate with commas.</p>
-            <input type="text" name="style_keywords" value="{{ profile.style_keywords|join:', ' }}"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border"
-                placeholder="Minimalist, Vintage, Earth Tones...">
+            <p class="text-xs text-text-muted mb-4">Enter keywords that describe your aesthetic (e.g., 'Minimalist', 'Streetwear'). Separate with commas.</p>
+            <input type="text" name="style_keywords" 
+                value="{% if profile.style_keywords %}{{ profile.style_keywords|join:', ' }}{% endif %}"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border transition-all"
+                placeholder="Minimalist, Vintage, Streetwear...">
         </div>
 
-        <!-- Sizes & Fit -->
-        <div class="card">
-            <h3 class="font-medium text-text-dark mb-4 flex items-center">
+        <div class="card hover:shadow-md transition-all">
+            <h3 class="font-semibold text-text-dark mb-4 flex items-center">
                 <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3">
-                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
                 </svg>
                 Perfect Fit
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-text-medium mb-1">Top Size</label>
-                    <select name="size_top"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border">
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Top Size</label>
+                    <select name="size_top" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border">
                         <option value="">Select Size</option>
-                        <option value="XS" {% if profile.sizes.top=='XS' %}selected{% endif %}>XS</option>
-                        <option value="S" {% if profile.sizes.top=='S' %}selected{% endif %}>S</option>
-                        <option value="M" {% if profile.sizes.top=='M' %}selected{% endif %}>M</option>
-                        <option value="L" {% if profile.sizes.top=='L' %}selected{% endif %}>L</option>
-                        <option value="XL" {% if profile.sizes.top=='XL' %}selected{% endif %}>XL</option>
+                        <option value="XS" {% if profile.size_top == "XS" %}selected{% endif %}>XS</option>
+                        <option value="S" {% if profile.size_top == "S" %}selected{% endif %}>S</option>
+                        <option value="M" {% if profile.size_top == "M" %}selected{% endif %}>M</option>
+                        <option value="L" {% if profile.size_top == "L" %}selected{% endif %}>L</option>
+                        <option value="XL" {% if profile.size_top == "XL" %}selected{% endif %}>XL</option>
+                        <option value="XXL" {% if profile.size_top == "XXL" %}selected{% endif %}>XXL</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-text-medium mb-1">Shoe Size (US)</label>
-                    <select name="size_shoe"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border">
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Shoe Size (US)</label>
+                    <select name="size_shoe" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border">
                         <option value="">Select Size</option>
-                        <option value="7" {% if profile.sizes.shoe=='7' %}selected{% endif %}>7</option>
-                        <option value="8" {% if profile.sizes.shoe=='8' %}selected{% endif %}>8</option>
-                        <option value="9" {% if profile.sizes.shoe=='9' %}selected{% endif %}>9</option>
-                        <option value="10" {% if profile.sizes.shoe=='10' %}selected{% endif %}>10</option>
-                        <option value="11" {% if profile.sizes.shoe=='11' %}selected{% endif %}>11</option>
-                        <option value="12" {% if profile.sizes.shoe=='12' %}selected{% endif %}>12</option>
+                        <option value="7" {% if profile.size_shoe == "7" %}selected{% endif %}>7</option>
+                        <option value="8" {% if profile.size_shoe == "8" %}selected{% endif %}>8</option>
+                        <option value="9" {% if profile.size_shoe == "9" %}selected{% endif %}>9</option>
+                        <option value="10" {% if profile.size_shoe == "10" %}selected{% endif %}>10</option>
+                        <option value="11" {% if profile.size_shoe == "11" %}selected{% endif %}>11</option>
+                        <option value="12" {% if profile.size_shoe == "12" %}selected{% endif %}>12</option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <!-- Preferences -->
-        <div class="card">
-            <h3 class="font-medium text-text-dark mb-4 flex items-center">
+        <div class="card hover:shadow-md transition-all">
+            <h3 class="font-semibold text-text-dark mb-4 flex items-center">
                 <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 Preferences & Goals
             </h3>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-text-medium mb-1">Favorite Colors</label>
-                    <input type="text" name="favorite_colors" value="{{ profile.favorite_colors }}"
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Favorite Colors</label>
+                    <input type="text" name="favorite_colors" value="{{ profile.favorite_colors|default:'' }}"
                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border"
                         placeholder="e.g. Navy Blue, Charcoal, White">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-text-medium mb-1">Fashion Goal</label>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Fashion Goal</label>
                     <textarea name="fashion_goals" rows="3"
                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border"
-                        placeholder="I want to build a versatile wardrobe for work and casual outings...">{{ profile.fashion_goals }}</textarea>
+                        placeholder="I want to build a versatile wardrobe...">{{ profile.fashion_goals|default:'' }}</textarea>
                 </div>
             </div>
         </div>
 
         <div class="flex justify-end pt-4">
-            <button type="submit" class="btn-primary flex items-center">
-                <span>Save Style Profile</span>
-                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3">
-                    </path>
-                </svg>
+            <button type="submit" class="inline-flex items-center px-6 py-2 bg-primary text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all shadow-lg">
+                Save Style Profile
             </button>
         </div>
     </form>

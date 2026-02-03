@@ -19,7 +19,7 @@
                 <div class="flex items-center justify-center h-full text-gray-400">No Image</div>
                 {% endif %}
                 <!-- Remove Action -->
-                <button
+                <button onclick="removeFromWishlist({{ product.pk }}, this)"
                     class="absolute top-2 right-2 bg-white/90 p-1.5 rounded-full text-error hover:bg-white shadow-sm transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -52,4 +52,39 @@
     </div>
     {% endif %}
 </div>
+</div>
+
+<script>
+    function removeFromWishlist(productId, btn) {
+        if (!confirm('Remove this item from wishlist?')) return;
+
+        fetch(`/dashboard/wishlist/remove/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // Find the closest card container and remove it
+                    const card = btn.closest('.card');
+                    if (card) {
+                        card.remove();
+                        // Check if any items left, if not reload to show empty state
+                        if (document.querySelectorAll('.card').length === 0) {
+                            window.location.reload();
+                        }
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
 {% endblock %}
