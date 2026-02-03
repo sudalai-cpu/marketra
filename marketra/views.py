@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
-from .models import Product, Address, StyleProfile, Wishlist
+from .models import Product, Address, StyleProfile, Wishlist, Collection
 from django.contrib.auth.decorators import login_required
 import random
 
@@ -33,34 +33,72 @@ def product_detail(request, pk):
     # Recommendations on detail page
     recommended_products = Product.objects.exclude(pk=pk).order_by('?')[:4]
     
-    collection_ids = request.session.get('collection', [])
-    in_collection = pk in collection_ids
+    # Collection State
+    in_collection = False
+    collection_count = 0
     
+    if request.user.is_authenticated:
+        if hasattr(request.user, 'collection'):
+            in_collection = request.user.collection.products.filter(pk=pk).exists()
+            collection_count = request.user.collection.products.count()
+    else:
+        collection_ids = request.session.get('collection', [])
+        in_collection = pk in collection_ids
+        collection_count = len(collection_ids)
+
     context = {
         'product': product,
         'categories': Category.objects.all(),
         'recommended_products': recommended_products,
         'in_collection': in_collection,
-        'collection_count': len(collection_ids),
-        'collection_ids': collection_ids,
+        'collection_count': collection_count,
+        # 'collection_ids': collection_ids, # Might be needed elsewhere, but for detail logic above is sufficient
         'in_wishlist': request.user.is_authenticated and request.user.wishlist.products.filter(pk=pk).exists() if hasattr(request.user, 'wishlist') else False,
     }
     return render(request, 'marketra/product_detail.html', context)
 
 def toggle_collection(request, pk):
+    print(f"DEBUG: toggle_collection called for pk={pk} user={request.user}")
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+    
     if request.method == 'POST':
-        collection = request.session.get('collection', [])
-        if pk in collection:
-            collection.remove(pk)
-            status = 'removed'
+        status = None
+        count = 0
+        
+        if request.user.is_authenticated:
+            # Database logic for logged-in users
+            product = get_object_or_404(Product, pk=pk)
+            collection_obj, created = Collection.objects.get_or_create(user=request.user)
+            
+            if collection_obj.products.filter(pk=pk).exists():
+                collection_obj.products.remove(product)
+                status = 'removed'
+            else:
+                collection_obj.products.add(product)
+                status = 'added'
+            
+            count = collection_obj.products.count()
+            print(f"DEBUG: DB Collection updated. Status={status}, Count={count}")
+            
         else:
-            collection.append(pk)
-            status = 'added'
-        
-        request.session['collection'] = collection
-        
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'status': 'success', 'action': status, 'count': len(collection)})
+            # Session logic for anonymous users
+            collection = request.session.get('collection', [])
+            print(f"DEBUG: Current session collection before: {collection}")
+            
+            if pk in collection:
+                collection.remove(pk)
+                status = 'removed'
+            else:
+                collection.append(pk)
+                status = 'added'
+            
+            request.session['collection'] = collection
+            request.session.modified = True
+            count = len(collection)
+            print(f"DEBUG: Session Collection updated. Status={status}, New collection: {collection}")
+
+        if is_ajax:
+            return JsonResponse({'status': 'success', 'action': status, 'count': count})
             
     return redirect('marketra:home')
 

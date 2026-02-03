@@ -64,3 +64,11 @@ class Wishlist(models.Model):
 
     def __str__(self):
         return f"Wishlist for {self.user.username}"
+
+class Collection(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='collection')
+    products = models.ManyToManyField(Product, related_name='collected_by', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Collection for {self.user.username}"
