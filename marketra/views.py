@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
-from .models import Product, Address, StyleProfile, Wishlist, Collection
+from .models import Product, Address, StyleProfile, Wishlist, Collection, ViewHistory
 from django.contrib.auth.decorators import login_required
 import random
 
@@ -55,6 +55,11 @@ def product_detail(request, pk):
         # 'collection_ids': collection_ids, # Might be needed elsewhere, but for detail logic above is sufficient
         'in_wishlist': request.user.is_authenticated and request.user.wishlist.products.filter(pk=pk).exists() if hasattr(request.user, 'wishlist') else False,
     }
+
+    if request.user.is_authenticated:
+        
+        ViewHistory.objects.create(user=request.user,product_name=product.name,category=product.category)
+
     return render(request, 'marketra/product_detail.html', context)
 
 def toggle_collection(request, pk):

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-9i2mwt!&e057mdkyij@-z^_=l40r!rlyu!&63s=4z7)xpkz(s0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['marketra.pythonanywhere.com']
+ALLOWED_HOSTS = ['marketra.pythonanywhere.com','localhost','[IP_ADDRESS]','127.0.0.1']
 
 
 # Application definition
