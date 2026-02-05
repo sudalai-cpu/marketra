@@ -7,25 +7,53 @@ from .models import Product, Address, StyleProfile, Wishlist, Collection, ViewHi
 from django.contrib.auth.decorators import login_required
 import random
 
+from .ai_utils import get_ai_recommendations
+
 def home(request):
-    # Featured products: top 4 by AI rank
     featured_products = Product.objects.all().order_by('ai_rank')[:4]
-    
-    # Recommended products: 4 random products
     recommended_products = Product.objects.all().order_by('?')[:4]
-    
-    # Get collection from session
     collection_ids = request.session.get('collection', [])
-    collection_products = Product.objects.filter(id__in=collection_ids)
     
+    # Database-la irukka ella names-a edukkurom
+    available_products = list(Product.objects.values_list('name', flat=True))
+    available_products_str = ", ".join(available_products)
+
+    ai_picks_text = ""
+    ai_product_objects = []
+
+    if request.user.is_authenticated:
+        history = ViewHistory.objects.filter(user=request.user).order_by('-viewed_at')[:5]
+        viewed_products = [item.product_name for item in history]
+        
+        if viewed_products:
+            # 1. Inga thaan product_string create aaguthu
+            product_string = ", ".join(viewed_products)
+            
+            # 2. Intha line "if" kulla thaan irukkanum (Ippo sariyaa irukku)
+            ai_picks_text = get_ai_recommendations(product_string, available_products_str)
+            
+            suggested_names = [name.strip() for name in ai_picks_text.split(',')]
+            for name in suggested_names:
+                p = Product.objects.filter(name__icontains=name).first()
+                if p:
+                    ai_product_objects.append(p)
+        else:
+            ai_picks_text = "Start exploring our collection for personalized picks!"
+    else:
+        ai_picks_text = "Login to see AI-powered curation just for you."
+
     context = {
         'featured_products': featured_products,
         'recommended_products': recommended_products,
-        'collection_products': collection_products,
-        'collection_count': len(collection_ids),
         'collection_ids': collection_ids,
+        'collection_count': len(collection_ids),
+        'ai_recommendations_text': ai_picks_text,
+        'ai_products': ai_product_objects,
     }
+    
     return render(request, 'marketra/index.html', context)
+
+
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -245,7 +273,9 @@ def recommendations_view(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'marketra/dashboard/overview.html')
+    
+    return render(request, 'marketra/dashboard.html')
+    
 
 @login_required
 def profile_view(request):
