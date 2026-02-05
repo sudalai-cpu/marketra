@@ -1,8 +1,13 @@
 from google import genai
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv() # Ithu thaan antha .env file-a read pannum
+
 # Inga rendu arguments (viewed_items_list, available_list) irukanum
 def get_ai_recommendations(viewed_items_list, available_list):
-    client = genai.Client(api_key="REPLACED_FOR_SECURITY")
+    client = genai.Client(api_key = os.getenv("GEMINI_API_KEY"))
     
     # Variable names-a sariyaa match panniyachu
     prompt = f"""
