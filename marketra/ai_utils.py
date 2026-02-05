@@ -2,7 +2,7 @@ from google import genai
 
 # Inga rendu arguments (viewed_items_list, available_list) irukanum
 def get_ai_recommendations(viewed_items_list, available_list):
-    client = genai.Client(api_key="AIzaSyDpiQyhHNYuc7-4tzdsVYbvmwE-c34fqKs")
+    client = genai.Client(api_key="REPLACED_FOR_SECURITY")
     
     # Variable names-a sariyaa match panniyachu
     prompt = f"""
