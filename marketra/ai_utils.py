@@ -1,22 +1,22 @@
-from google import genai
-
 import os
+import re
+from google import genai
 from dotenv import load_dotenv
 
-load_dotenv() # Ithu thaan antha .env file-a read pannum
+load_dotenv()
 
-# Inga rendu arguments (viewed_items_list, available_list) irukanum
 def get_ai_recommendations(viewed_items_list, available_list):
-    client = genai.Client(api_key = os.getenv("GEMINI_API_KEY"))
+    client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
     
-    # Variable names-a sariyaa match panniyachu
+    # Prompt-a innum strict-a maathiyachu
     prompt = f"""
     User history: {viewed_items_list}.
     Available products in my shop: {available_list}.
     
-    TASK: Suggest 2 or 3 products ONLY from the 'Available products' list above.
-    Do NOT suggest brands like Rolex or Gucci if they are not in the list.
-    Return ONLY product names exactly as given, separated by commas.
+    TASK: Based on user history, suggest exactly 2 products from the 'Available products' list.
+    Return ONLY the product names separated by a comma. 
+    Example format: Product Name 1, Product Name 2
+    Do not add any explanations or other text.
     """
     
     try:
@@ -26,13 +26,12 @@ def get_ai_recommendations(viewed_items_list, available_list):
         )
         
         if response and response.text:
-            cleaned_text = response.text.replace("\n", "").strip()
-            print(f"CLEANED AI NAMES: {cleaned_text}")
+            # AI response-la vara newline characters-a thookittu clean pandrom
+            cleaned_text = response.text.strip().replace('\n', '')
             return cleaned_text
             
-        # Fallback-la unga real product name onnu kuduppom (Rolex-a thookittu)
-        return "Ergo-Pro Business Chair, Ambient Studio Light" 
+        return "" 
 
     except Exception as e:
         print(f"AI ERROR: {str(e)}")
-        return "Ergo-Pro Business Chair, Ambient Studio Light"
+        return ""

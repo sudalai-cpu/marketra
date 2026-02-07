@@ -10,37 +10,46 @@ import random
 from .ai_utils import get_ai_recommendations
 
 def home(request):
+    # Intha lines ellam "def home" kulla 4 spaces thalli irukkanum
     featured_products = Product.objects.all().order_by('ai_rank')[:4]
     recommended_products = Product.objects.all().order_by('?')[:4]
     collection_ids = request.session.get('collection', [])
     
-    # Database-la irukka ella names-a edukkurom
-    available_products = list(Product.objects.values_list('name', flat=True))
-    available_products_str = ", ".join(available_products)
+    available_products_qs = Product.objects.all()
+    available_names = [p.name for p in available_products_qs]
+    available_products_str = ", ".join(available_names)
 
-    ai_picks_text = ""
     ai_product_objects = []
+    ai_picks_text = ""
 
     if request.user.is_authenticated:
+        # History fetch
         history = ViewHistory.objects.filter(user=request.user).order_by('-viewed_at')[:5]
-        viewed_products = [item.product_name for item in history]
         
-        if viewed_products:
-            # 1. Inga thaan product_string create aaguthu
-            product_string = ", ".join(viewed_products)
+        if history.exists():
+            # item.product.name or item.product_name (Check your model)
+            viewed_products = [getattr(item, 'product_name', item.product.name if hasattr(item, 'product') else '') for item in history]
+            product_string = ", ".join(filter(None, viewed_products))
             
-            # 2. Intha line "if" kulla thaan irukkanum (Ippo sariyaa irukku)
             ai_picks_text = get_ai_recommendations(product_string, available_products_str)
             
-            suggested_names = [name.strip() for name in ai_picks_text.split(',')]
-            for name in suggested_names:
-                p = Product.objects.filter(name__icontains=name).first()
-                if p:
-                    ai_product_objects.append(p)
+            if ai_picks_text:
+                suggested_names = [name.strip().strip('.') for name in ai_picks_text.split(',')]
+                for name in suggested_names:
+                    if name:
+                        p = Product.objects.filter(name__icontains=name).first()
+                        if p:
+                            ai_product_objects.append(p)
+            
+            # Match kidaikalana random-a 2 products
+            if not ai_product_objects:
+                ai_product_objects = Product.objects.all().order_by('?')[:2]
         else:
-            ai_picks_text = "Start exploring our collection for personalized picks!"
+            ai_picks_text = "Explore our shop for personalized recommendations!"
+            ai_product_objects = Product.objects.all().order_by('?')[:2]
     else:
-        ai_picks_text = "Login to see AI-powered curation just for you."
+        ai_picks_text = "Login for AI-curated picks."
+        ai_product_objects = Product.objects.all().order_by('?')[:2]
 
     context = {
         'featured_products': featured_products,
@@ -48,7 +57,7 @@ def home(request):
         'collection_ids': collection_ids,
         'collection_count': len(collection_ids),
         'ai_recommendations_text': ai_picks_text,
-        'ai_products': ai_product_objects,
+        'ai_products': ai_product_objects[:2],
     }
     
     return render(request, 'marketra/index.html', context)
