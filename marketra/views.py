@@ -273,8 +273,8 @@ def recommendations_view(request):
 
 @login_required
 def dashboard(request):
-    
-    return render(request, 'marketra/dashboard.html')
+
+    return render(request, 'marketra/dashboard/overview.html')
     
 
 @login_required
