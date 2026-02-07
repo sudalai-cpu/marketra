@@ -21,7 +21,7 @@ def get_ai_recommendations(viewed_items_list, available_list):
     
     try:
         response = client.models.generate_content(
-            model='gemini-1.5-flash', 
+            model='gemini-1.5-flash-latest', 
             contents=prompt
         )
         
