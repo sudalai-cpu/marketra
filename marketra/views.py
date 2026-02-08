@@ -48,7 +48,7 @@ def home(request):
             ai_picks_text = "Explore our shop for personalized recommendations!"
             ai_product_objects = Product.objects.all().order_by('?')[:2]
     else:
-        ai_picks_text = "Login for AI-curated picks."
+        ai_picks_text = "Login to see AI-powered curation just for you."
         ai_product_objects = Product.objects.all().order_by('?')[:2]
 
     context = {
