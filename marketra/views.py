@@ -270,11 +270,52 @@ def collection_view(request):
     return render(request, 'marketra/collection.html', context)
 
 def recommendations_view(request):
-    recommended_products = Product.objects.all().order_by('?')[:12]  # Show more on standalone page
+    # DB products for AI context
+    available_products_qs = Product.objects.all()
+    available_names = [p.name for p in available_products_qs]
+    available_products_str = ", ".join(available_names)
+
+    ai_recommended_products = []
     collection_ids = request.session.get('collection', [])
     
+    # Intha flag-a vachi thaan template-la AI-Powered badge-a kaatta porom
+    is_ai_success = False
+
+    if request.user.is_authenticated:
+        history = ViewHistory.objects.filter(user=request.user).order_by('-viewed_at')[:8]
+        
+        if history.exists():
+            viewed_products = [item.product_name for item in history]
+            product_string = ", ".join(viewed_products)
+            
+            # AI call
+            ai_response = get_ai_recommendations(product_string, available_products_str)
+            
+            if ai_response:
+                # suggested_names check
+                suggested_names = [name.strip().strip('.') for name in ai_response.split(',')]
+                for name in suggested_names:
+                    if name:
+                        # Database lookup
+                        p = Product.objects.filter(name__icontains=name).first()
+                        if p and p not in ai_recommended_products:
+                            ai_recommended_products.append(p)
+                
+                # AI products database-la kidaichaa mattum success flag-a True pannu
+                if ai_recommended_products:
+                    is_ai_success = True
+
+    # --- THE "STRICT" LOGIC ---
+    if is_ai_success:
+        # AI success aana mattum andha products-a anupu
+        final_products = ai_recommended_products[:6]
+    else:
+        # AI fail aana verum empty list. Random pundaium varaadhu!
+        final_products = []
+
     context = {
-        'recommended_products': recommended_products,
+        'recommended_products': final_products,
+        'is_ai_success': is_ai_success, # Intha flag template-ku mukkiyam
         'collection_count': len(collection_ids),
         'collection_ids': collection_ids,
     }
