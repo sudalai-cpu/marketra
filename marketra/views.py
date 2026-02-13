@@ -14,7 +14,6 @@ from marketra.models import Collection
 
 
 def home(request):
-    # Intha lines ellam "def home" kulla 4 spaces thalli irukkanum
     featured_products = Product.objects.all().order_by('ai_rank')[:4]
     recommended_products = Product.objects.all().order_by('?')[:4]
     collection_ids = request.session.get('collection', [])
@@ -27,17 +26,15 @@ def home(request):
     ai_picks_text = ""
 
     if request.user.is_authenticated:
-        # History fetch
         history = ViewHistory.objects.filter(user=request.user).order_by('-viewed_at')[:5]
         
         if history.exists():
-            # item.product.name or item.product_name (Check your model)
             viewed_products = [getattr(item, 'product_name', item.product.name if hasattr(item, 'product') else '') for item in history]
             product_string = ", ".join(filter(None, viewed_products))
             
-            ai_picks_data = get_ai_recommendations(product_string, available_products_str, request.user)
-
-
+            # 1. Inga dhaan function-ah call pannanum (Assumed you have this function defined elsewhere or globally)
+            # Indha function logic vera enga dhaan irukko adha use panni data fetch pannunga
+            ai_picks_text = get_ai_recommendations(product_string, available_products_str, request.user)
             
             if ai_picks_text:
                 suggested_names = [name.strip().strip('.') for name in ai_picks_text.split(',')]
@@ -47,7 +44,6 @@ def home(request):
                         if p:
                             ai_product_objects.append(p)
             
-            # Match kidaikalana random-a 2 products
             if not ai_product_objects:
                 ai_product_objects = Product.objects.all().order_by('?')[:2]
         else:
@@ -278,44 +274,41 @@ def collection_view(request):
 @login_required
 def recommendations(request):
     user = request.user
-
     all_products = Product.objects.all()
     available_products_str = ", ".join([p.name for p in all_products])
 
-    history = ViewHistory.objects.filter(
-        user=user
-    ).order_by('-viewed_at')[:5]
+    history = ViewHistory.objects.filter(user=user).order_by('-viewed_at')[:5]
+    product_string = ", ".join([h.product_name for h in history])
 
-    # ⚠️ CHANGE FIELD NAME HERE BASED ON MODEL
-    product_string = ", ".join([h.products.name for h in history])
+    ai_picks_text = get_ai_recommendations(product_string, available_products_str, user)
 
-    ai_picks_text = get_ai_recommendations(
-        product_string,
-        available_products_str,
-        user
-    )
+    # List of names clean-ah eduthukoam
+    suggested_names = [name.strip() for name in ai_picks_text.split(',') if name.strip()]
 
-    suggested_names = [
-        name.strip()
-        for name in ai_picks_text.split(',')
-        if name.strip()
-    ]
+    # 🟢 FIX STARTS HERE: __in use pannama, loop panni icontains use pannunga
+    ai_product_objects = []
+    for name in suggested_names:
+        # icontains use panna "iPhone" nu irundha "iPhone 15" ah find pannum
+        p = Product.objects.filter(name__icontains=name).first()
+        if p and p not in ai_product_objects:
+            ai_product_objects.append(p)
 
-    final_products = Product.objects.filter(name__in=suggested_names)
+    # 🟡 Safety Fallback: AI kitta irundhu ethume kidaikalana random-ah 4 products
+    if not ai_product_objects:
+        ai_product_objects = list(Product.objects.all().order_by('?')[:4])
 
     collection_ids = Collection.objects.filter(
         user=user
     ).values_list('products__id', flat=True).distinct()
 
     context = {
-        'recommended_products': final_products,
-        'is_ai_success': True if final_products else False,
+        'recommended_products': ai_product_objects, # Name updated to match list
+        'is_ai_success': True if ai_product_objects else False,
         'collection_count': len(collection_ids),
         'collection_ids': list(collection_ids),
     }
 
     return render(request, 'marketra/recommendations.html', context)
-
 
 
 
