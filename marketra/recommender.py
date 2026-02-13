@@ -1,33 +1,24 @@
-from .models import Product
-
-def ai_score(candidate, viewed_product):
-    score = 0
-
-    if candidate.category == viewed_product.category:
-        score += 5
-
-    price_diff = abs(candidate.price - viewed_product.price)
-    if price_diff <= 500:
-        score += 3
-    elif price_diff <= 1000:
-        score += 1
-
-    if candidate.is_featured:
-        score += 2
-
-    return score
+from marketra.models import Product
+from .models import Collection
 
 
-def rule_based_recommendations(viewed_product):
-    candidates = Product.objects.exclude(id=viewed_product.id)
+def get_ai_recommendations(user):
+    recommended = []
 
-    scored_products = []
+    user_collections = Collection.objects.filter(user=user)
 
-    for product in candidates:
-        score = ai_score(product, viewed_product)
-        if score > 0:
-            scored_products.append((score, product))
+    print("USER COLLECTION COUNT:", user_collections.count())
 
-    scored_products.sort(reverse=True, key=lambda x: x[0])
+    owned_product_ids = user_collections.values_list(
+        'products__id',
+        flat=True
+    )
 
-    return [p for score, p in scored_products][:6]
+    for product in Product.objects.exclude(id__in=owned_product_ids):
+        print("RECOMMENDING:", product.id, product.category)
+        recommended.append(product)
+
+    if recommended:
+        return recommended[:8], True
+
+    return [], False

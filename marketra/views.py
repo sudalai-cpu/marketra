@@ -9,7 +9,8 @@ import random
 
 from .ai_utils import get_ai_recommendations
 
-from .recommender import rule_based_recommendations
+from .recommender import get_ai_recommendations
+from marketra.models import Collection
 
 
 def home(request):
@@ -34,7 +35,9 @@ def home(request):
             viewed_products = [getattr(item, 'product_name', item.product.name if hasattr(item, 'product') else '') for item in history]
             product_string = ", ".join(filter(None, viewed_products))
             
-            ai_picks_text = get_ai_recommendations(product_string, available_products_str)
+            ai_picks_data = get_ai_recommendations(product_string, available_products_str, request.user)
+
+
             
             if ai_picks_text:
                 suggested_names = [name.strip().strip('.') for name in ai_picks_text.split(',')]
@@ -272,49 +275,48 @@ def collection_view(request):
     }
     return render(request, 'marketra/collection.html', context)
 
-from .recommender import rule_based_recommendations
+@login_required
+def recommendations(request):
+    user = request.user
 
-from .recommender import rule_based_recommendations
-from .models import Product, ViewHistory
+    all_products = Product.objects.all()
+    available_products_str = ", ".join([p.name for p in all_products])
 
-def recommendations_view(request):
-    ai_recommended_products = []
-    collection_ids = request.session.get('collection', [])
-    is_ai_success = False
+    history = ViewHistory.objects.filter(
+        user=user
+    ).order_by('-viewed_at')[:5]
 
-    if request.user.is_authenticated:
-        history = ViewHistory.objects.filter(
-            user=request.user
-        ).order_by('-viewed_at')[:1]
+    # ⚠️ CHANGE FIELD NAME HERE BASED ON MODEL
+    product_string = ", ".join([h.products.name for h in history])
 
-        if history.exists():
-            last_viewed_name = history[0].product_name
+    ai_picks_text = get_ai_recommendations(
+        product_string,
+        available_products_str,
+        user
+    )
 
-            # 🔍 Product table-la name vachi lookup
-            product = Product.objects.filter(
-                name__icontains=last_viewed_name
-            ).first()
+    suggested_names = [
+        name.strip()
+        for name in ai_picks_text.split(',')
+        if name.strip()
+    ]
 
-            if product:
-                recommended_qs = rule_based_recommendations(product)
+    final_products = Product.objects.filter(name__in=suggested_names)
 
-                if recommended_qs.exists():
-                    ai_recommended_products = list(recommended_qs)
-                    is_ai_success = True
-
-    # STRICT LOGIC (unchanged)
-    if is_ai_success:
-        final_products = ai_recommended_products[:6]
-    else:
-        final_products = []
+    collection_ids = Collection.objects.filter(
+        user=user
+    ).values_list('products__id', flat=True).distinct()
 
     context = {
         'recommended_products': final_products,
-        'is_ai_success': is_ai_success,
+        'is_ai_success': True if final_products else False,
         'collection_count': len(collection_ids),
-        'collection_ids': collection_ids,
+        'collection_ids': list(collection_ids),
     }
+
     return render(request, 'marketra/recommendations.html', context)
+
+
 
 
 
