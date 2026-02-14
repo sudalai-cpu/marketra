@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, ViewHistory
+from .models import Category, Product, ViewHistory 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):

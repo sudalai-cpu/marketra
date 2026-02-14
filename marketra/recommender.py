@@ -1,30 +1,43 @@
-from marketra.models import Product
-from .models import Collection
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
+from .models import Product, ViewHistory
 
-def get_ai_recommendations(product_string, available_products_str, user):
-    from marketra.models import Product, Collection
+def get_hybrid_recommendations(user, num_rec=10):
+    products = Product.objects.all()
+    if not products.exists(): return []
+
+    # Content Processing
+    df = pd.DataFrame(list(products.values('id', 'name', 'description')))
+    df['content'] = df['name'].fillna('') + " " + df['description'].fillna('')
     
-    # 1. User kitta munnadiye irukkara products-ah kandupidi
-    user_collections = Collection.objects.filter(user=user)
-    owned_ids = user_collections.values_list('products__id', flat=True)
-
-    # 2. User paatha items-oda names-ah vachu filter panna keywords edukkalam
-    # (e.g., 'iPhone, Samsung' nu product_string irundha, 'iPhone' kulla irukkara vera models-ah kaatum)
-    keywords = [k.strip() for k in product_string.split(',') if k.strip()]
+    tfidf = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf.fit_transform(df['content'])
     
-    # 3. Database-la check pannu
-    recommended_qs = Product.objects.exclude(id__in=owned_ids)
+    # User History Analysis
+    user_history = ViewHistory.objects.filter(user=user).order_by('-viewed_at')[:5]
     
-    final_picks = []
-    for word in keywords:
-        # User paatha word product name-la irundha adhai pick pannu
-        matches = recommended_qs.filter(name__icontains=word).exclude(id__in=[p.id for p in final_picks])
-        final_picks.extend(list(matches[:2])) # Oru keyword-ku 2 products max
+    if not user_history.exists():
+        return [{'product': p, 'score': 0} for p in products.order_by('-ai_rank')[:num_rec]]
 
-    # 4. Oru vela matches illana, general-ah konjam products pick pannu
-    if len(final_picks) < 4:
-        extras = recommended_qs.exclude(id__in=[p.id for p in final_picks]).order_by('?')[:4]
-        final_picks.extend(list(extras))
+    # Logic: Last 3 items vachu average similarity edukka porom (Advanced Pro level)
+    results = []
+    seen_ids = set()
+    
+    for history in user_history:
+        try:
+            idx = df[df['id'] == history.product.id].index[0]
+            sim_scores = list(enumerate(cosine_similarity(tfidf_matrix[idx], tfidf_matrix)[0]))
+            
+            for i, score in sim_scores:
+                prod_id = df.iloc[i]['id']
+                match_percentage = round(score * 100)
+                
+                if prod_id not in seen_ids and match_percentage > 10 and prod_id != history.product.id:
+                    prod = Product.objects.get(id=prod_id)
+                    results.append({'product': prod, 'score': match_percentage})
+                    seen_ids.add(prod_id)
+        except: continue
 
-    # String-ah thiruppi anupu (Home view split panna)
-    return ", ".join([p.name for p in final_picks[:8]])
+    # Top scores-ah sort panni anuppalam
+    return sorted(results, key=lambda x: x['score'], reverse=True)[:num_rec]

@@ -75,14 +75,16 @@ class Collection(models.Model):
 
 class ViewHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # AI-kku intha foreign key romba mukkiyam
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True) 
     product_name = models.CharField(max_length=255)
     category = models.CharField(max_length=100)
+    
+    # Advanced AI Logic-kaka intha rendu field extra:
+    interaction_type = models.CharField(max_length=20, default='view') # 'view', 'wishlist', 'buy'
+    strength = models.IntegerField(default=1) # View=1, Wishlist=3, Buy=5
+    
     viewed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} viewed {self.product_name}"
-
-class ProductView(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    viewed_at = models.DateTimeField(auto_now_add=True)

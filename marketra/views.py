@@ -7,45 +7,33 @@ from .models import Product, Address, StyleProfile, Wishlist, Collection, ViewHi
 from django.contrib.auth.decorators import login_required
 import random
 
-from .ai_utils import get_ai_recommendations
-
-from .recommender import get_ai_recommendations
 from marketra.models import Collection
+
+from django.shortcuts import render, get_object_or_404
+from .recommender import get_hybrid_recommendations
 
 
 def home(request):
+    # 1. Featured products logic (AI Rank padi edukkurom)
     featured_products = Product.objects.all().order_by('ai_rank')[:4]
-    recommended_products = Product.objects.all().order_by('?')[:4]
-    collection_ids = request.session.get('collection', [])
     
-    available_products_qs = Product.objects.all()
-    available_names = [p.name for p in available_products_qs]
-    available_products_str = ", ".join(available_names)
+    # 2. Collection IDs check
+    collection_ids = request.session.get('collection', [])
+    if request.user.is_authenticated and hasattr(request.user, 'collection'):
+        collection_ids = list(request.user.collection.products.values_list('id', flat=True))
 
     ai_product_objects = []
     ai_picks_text = ""
 
     if request.user.is_authenticated:
-        history = ViewHistory.objects.filter(user=request.user).order_by('-viewed_at')[:5]
+        # 3. Namma puthu Hybrid AI logic-ah call pandrom
+        # Ithu automatic-ah database similarity-ah check pannum
+        recommended_data = get_hybrid_recommendations(request.user, num_rec=4)
         
-        if history.exists():
-            viewed_products = [getattr(item, 'product_name', item.product.name if hasattr(item, 'product') else '') for item in history]
-            product_string = ", ".join(filter(None, viewed_products))
-            
-            # 1. Inga dhaan function-ah call pannanum (Assumed you have this function defined elsewhere or globally)
-            # Indha function logic vera enga dhaan irukko adha use panni data fetch pannunga
-            ai_picks_text = get_ai_recommendations(product_string, available_products_str, request.user)
-            
-            if ai_picks_text:
-                suggested_names = [name.strip().strip('.') for name in ai_picks_text.split(',')]
-                for name in suggested_names:
-                    if name:
-                        p = Product.objects.filter(name__icontains=name).first()
-                        if p:
-                            ai_product_objects.append(p)
-            
-            if not ai_product_objects:
-                ai_product_objects = Product.objects.all().order_by('?')[:2]
+        if recommended_data:
+            # recommended_data-la irunthu products-ah mattum extract pannuvom
+            ai_product_objects = [item['product'] for item in recommended_data]
+            ai_picks_text = "AI-Powered Curation: Based on your recent interests."
         else:
             ai_picks_text = "Explore our shop for personalized recommendations!"
             ai_product_objects = Product.objects.all().order_by('?')[:2]
@@ -55,11 +43,11 @@ def home(request):
 
     context = {
         'featured_products': featured_products,
-        'recommended_products': recommended_products,
         'collection_ids': collection_ids,
         'collection_count': len(collection_ids),
         'ai_recommendations_text': ai_picks_text,
-        'ai_products': ai_product_objects[:2],
+        'ai_products': ai_product_objects, 
+        # Frontend-la score venumna direct-ah 'recommended_data'-vum anuppalaam
     }
     
     return render(request, 'marketra/index.html', context)
@@ -69,36 +57,23 @@ def home(request):
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     
-    # Recommendations on detail page
-    recommended_products = Product.objects.exclude(pk=pk).order_by('?')[:4]
-    
-    # Collection State
-    in_collection = False
-    collection_count = 0
-    
     if request.user.is_authenticated:
-        if hasattr(request.user, 'collection'):
-            in_collection = request.user.collection.products.filter(pk=pk).exists()
-            collection_count = request.user.collection.products.count()
-    else:
-        collection_ids = request.session.get('collection', [])
-        in_collection = pk in collection_ids
-        collection_count = len(collection_ids)
+        # Interaction Tracking for AI input
+        ViewHistory.objects.create(
+            user=request.user,
+            product=product,
+            product_name=product.name,
+            category=product.category.name if product.category else "General",
+            interaction_type='view',
+            strength=1
+        )
 
     context = {
         'product': product,
         'categories': Category.objects.all(),
-        'recommended_products': recommended_products,
-        'in_collection': in_collection,
-        'collection_count': collection_count,
-        # 'collection_ids': collection_ids, # Might be needed elsewhere, but for detail logic above is sufficient
-        'in_wishlist': request.user.is_authenticated and request.user.wishlist.products.filter(pk=pk).exists() if hasattr(request.user, 'wishlist') else False,
+        'in_collection': request.user.is_authenticated and hasattr(request.user, 'collection') and request.user.collection.products.filter(pk=pk).exists(),
+        'in_wishlist': request.user.is_authenticated and hasattr(request.user, 'wishlist') and request.user.wishlist.products.filter(pk=pk).exists(),
     }
-
-    if request.user.is_authenticated:
-        
-        ViewHistory.objects.create(user=request.user,product_name=product.name,category=product.category)
-
     return render(request, 'marketra/product_detail.html', context)
 
 def toggle_collection(request, pk):
@@ -273,41 +248,22 @@ def collection_view(request):
 
 @login_required
 def recommendations(request):
-    user = request.user
-    all_products = Product.objects.all()
-    available_products_str = ", ".join([p.name for p in all_products])
+    if not request.user.is_authenticated:
+        return render(request, 'marketra/recommendations.html', {'is_ai_success': False})
 
-    history = ViewHistory.objects.filter(user=user).order_by('-viewed_at')[:5]
-    product_string = ", ".join([h.product_name for h in history])
+    # AI Engine call pandrom
+    recommended_data = get_hybrid_recommendations(request.user, num_rec=12)
 
-    ai_picks_text = get_ai_recommendations(product_string, available_products_str, user)
-
-    # List of names clean-ah eduthukoam
-    suggested_names = [name.strip() for name in ai_picks_text.split(',') if name.strip()]
-
-    # 🟢 FIX STARTS HERE: __in use pannama, loop panni icontains use pannunga
-    ai_product_objects = []
-    for name in suggested_names:
-        # icontains use panna "iPhone" nu irundha "iPhone 15" ah find pannum
-        p = Product.objects.filter(name__icontains=name).first()
-        if p and p not in ai_product_objects:
-            ai_product_objects.append(p)
-
-    # 🟡 Safety Fallback: AI kitta irundhu ethume kidaikalana random-ah 4 products
-    if not ai_product_objects:
-        ai_product_objects = list(Product.objects.all().order_by('?')[:4])
-
-    collection_ids = Collection.objects.filter(
-        user=user
-    ).values_list('products__id', flat=True).distinct()
+    # Collection IDs for 'Add to Cart' buttons in recommendation page
+    collection_ids = []
+    if hasattr(request.user, 'collection'):
+        collection_ids = list(request.user.collection.products.values_list('id', flat=True))
 
     context = {
-        'recommended_products': ai_product_objects, # Name updated to match list
-        'is_ai_success': True if ai_product_objects else False,
-        'collection_count': len(collection_ids),
-        'collection_ids': list(collection_ids),
+        'recommended_data': recommended_data, # Contains {'product': p, 'score': s}
+        'is_ai_success': True if recommended_data else False,
+        'collection_ids': collection_ids,
     }
-
     return render(request, 'marketra/recommendations.html', context)
 
 
