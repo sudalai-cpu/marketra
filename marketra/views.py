@@ -196,12 +196,16 @@ def featured_view(request):
     
     collection_ids = request.session.get('collection', [])
     
+    # Fetch random products for discovery section
+    random_products = Product.objects.all().order_by('?')[:8]
+    
     context = {
         'categories': categories,
         'featured_products': featured_products,
         'selected_category': selected_category,
         'collection_count': len(collection_ids),
         'collection_ids': collection_ids,
+        'random_products': random_products,
     }
     return render(request, 'marketra/featured.html', context)
 from django.db.models import Q
