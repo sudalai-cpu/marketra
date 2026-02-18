@@ -11,6 +11,8 @@ from marketra.models import Collection
 
 from django.shortcuts import render, get_object_or_404
 from .recommender import get_hybrid_recommendations
+from django.db.models import Q, Prefetch
+ 
 
 
 def home(request):
@@ -177,22 +179,16 @@ def logout_view(request):
 from .models import Product, Category, Section
 
 def featured_view(request):
-    # Fetch all sections with their categories prefetched for hierarchy
-    sections = Section.objects.prefetch_related('categories').all()
+    # Fetch all sections with their categories prefetched for hierarchy, ordered by display_order
+    sections = Section.objects.prefetch_related(
+        Prefetch('categories', queryset=Category.objects.order_by('display_order'))
+    ).order_by('display_order')
     
-    # Get selected category from query params
-    selected_category_id = request.GET.get('category')
-    selected_category = None
-    
-    if selected_category_id:
-        selected_category = get_object_or_404(Category, id=selected_category_id)
-        featured_products = Product.objects.filter(category=selected_category).order_by('ai_rank')
-    else:
-        # Fetch all featured products
-        featured_products = Product.objects.filter(is_featured=True).order_by('ai_rank')
-        # If none marked as featured, fallback to top 12 by AI rank
-        if not featured_products.exists():
-            featured_products = Product.objects.all().order_by('ai_rank')[:12]
+    # Fetch all featured products
+    featured_products = Product.objects.filter(is_featured=True).order_by('ai_rank')
+    # If none marked as featured, fallback to top 12 by AI rank
+    if not featured_products.exists():
+        featured_products = Product.objects.all().order_by('ai_rank')[:12]
     
     collection_ids = request.session.get('collection', [])
     
@@ -202,13 +198,39 @@ def featured_view(request):
     context = {
         'sections': sections,
         'featured_products': featured_products,
-        'selected_category': selected_category,
         'collection_count': len(collection_ids),
         'collection_ids': collection_ids,
         'random_products': random_products,
     }
     return render(request, 'marketra/featured.html', context)
-from django.db.models import Q
+
+def category_products_view(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    sort_by = request.GET.get('sort', 'best_match') # Default to AI Rank
+    
+    products = Product.objects.filter(category=category)
+    
+    if sort_by == 'price_low':
+        products = products.order_by('price')
+    elif sort_by == 'price_high':
+        products = products.order_by('-price')
+    elif sort_by == 'newest':
+        products = products.order_by('-created_at')
+    else: # best_match / ai_rank
+        products = products.order_by('ai_rank')
+        
+    collection_ids = request.session.get('collection', [])
+    if request.user.is_authenticated and hasattr(request.user, 'collection'):
+        collection_ids = list(request.user.collection.products.values_list('id', flat=True))
+        
+    context = {
+        'category': category,
+        'products': products,
+        'sort_by': sort_by,
+        'collection_count': len(collection_ids),
+        'collection_ids': collection_ids,
+    }
+    return render(request, 'marketra/category_products.html', context)
 
 def search_view(request):
     query = request.GET.get('q', '')

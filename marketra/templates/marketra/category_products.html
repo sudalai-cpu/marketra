@@ -1,0 +1,149 @@
+{% extends 'marketra/base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Marketra.ai{% endblock %}
+
+{% block content %}
+<section class="section-grey min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <!-- Breadcrumbs & Header -->
+        <div class="mb-12 animate-fade-in">
+            <nav class="flex items-center space-x-2 text-xs text-text-muted uppercase tracking-widest mb-4">
+                <a href="{% url 'marketra:featured' %}" class="hover:text-primary transition-colors">Featured</a>
+                <span>/</span>
+                <span class="text-text-dark font-bold">{{ category.section.name|default:"General" }}</span>
+            </nav>
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-text-dark tracking-tight mb-2">
+                        {{ category.name }}
+                    </h1>
+                    <p class="text-text-muted max-w-2xl">
+                        {{ category.description|default:"Explore our curated selection of premium products in this category." }}
+                    </p>
+                </div>
+
+                <!-- Sorting Dropdown -->
+                <div class="relative inline-block text-left">
+                    <form method="get" id="sort-form">
+                        <select name="sort" onchange="this.form.submit()"
+                            class="appearance-none bg-white border border-gray-100 text-text-dark text-sm font-bold rounded-xl focus:ring-primary focus:border-primary block w-48 p-4 pr-10 shadow-soft cursor-pointer hover:border-primary/20 transition-all">
+                            <option value="best_match" {% if sort_by == 'best_match' %}selected{% endif %}>Best Match (AI
+                                Rank)</option>
+                            <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to
+                                High</option>
+                            <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to
+                                Low</option>
+                            <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest Arrivals
+                            </option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-primary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in products %}
+            <div
+                class="card group hover:scale-[1.02] transition-all duration-300 relative bg-white p-4 rounded-xl border border-gray-100">
+                <a href="{% url 'marketra:product_detail' product.pk %}" class="block hover:no-underline">
+                    <div
+                        class="aspect-[4/5] bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-gray-100 relative">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        {% elif product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        {% else %}
+                        <span class="text-gray-300 font-medium text-xs">Product Image</span>
+                        {% endif %}
+
+                        <div class="absolute top-3 right-3">
+                            <span
+                                class="bg-white/90 backdrop-blur-md text-primary text-[9px] font-bold px-2 py-1 rounded shadow-sm border border-blue-50">
+                                AI RANK #{{ product.ai_rank }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3
+                                class="text-base font-bold text-text-dark group-hover:text-primary transition-colors line-clamp-1">
+                                {{ product.name }}
+                            </h3>
+                        </div>
+                        <span class="text-primary font-bold text-lg">Rs.{{ product.price }}</span>
+                    </div>
+                </a>
+
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
+                    <span class="badge-success text-[10px]">{{ product.stock_status }}</span>
+
+                    <button onclick="addToCollection({{ product.pk }}, this)"
+                        class="text-xs font-semibold hover:underline flex items-center {% if product.id in collection_ids %}text-success{% else %}text-primary{% endif %}"
+                        {% if product.id in collection_ids %}disabled{% endif %}>
+                        {% if product.id in collection_ids %}
+                        Added
+                        {% else %}
+                        Add to Collection
+                        {% endif %}
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full py-32 text-center animate-fade-in">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-50 rounded-full mb-6">
+                    <svg class="w-10 h-10 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-text-dark mb-2">No products found</h3>
+                <p class="text-text-muted mb-8 max-w-md mx-auto">We couldn't find any products in this category at the
+                    moment. Please check back later or explore other collections.</p>
+                <a href="{% url 'marketra:featured' %}"
+                    class="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all inline-block shadow-soft">
+                    Back to Navigation Hub
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+    function addToCollection(productId, btn) {
+        // Simple mock for 이제 - toggle_collection handles the real logic via AJAX usually
+        fetch(`/collection/toggle/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (data.action === 'added') {
+                        btn.innerText = 'Added';
+                        btn.classList.add('text-success');
+                        btn.classList.remove('text-primary');
+                        btn.disabled = true;
+                    }
+                    const counter = document.querySelector('.collection-counter');
+                    if (counter) counter.innerText = data.count;
+                }
+            });
+    }
+</script>
+{% endblock %}

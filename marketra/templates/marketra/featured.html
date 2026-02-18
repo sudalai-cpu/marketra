@@ -145,9 +145,10 @@
 
                         <div class="grid grid-cols-1 gap-1">
                             {% for category in section.categories.all %}
-                            <a href="?category={{ category.id }}#product-section"
+                            <a href="{% url 'marketra:category_products' category.id %}"
                                 class="group flex items-center justify-between p-3 hover:bg-primary/5 rounded-xl transition-all">
-                                <span class="text-text-medium font-medium group-hover:text-primary transition-colors">{{category.name }}</span>
+                                <span
+                                    class="text-text-medium font-medium group-hover:text-primary transition-colors">{{category.name}}</span>
                                 <span
                                     class="text-[10px] text-text-muted bg-gray-100 px-2 py-0.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                                     {{ category.products.count }} items
@@ -288,7 +289,8 @@
                             </div>
                         </div>
                         <h3
-                            class="font-bold text-text-dark text-sm mb-1 group-hover:text-primary transition-colors line-clamp-1">{{ product.name }}</h3>
+                            class="font-bold text-text-dark text-sm mb-1 group-hover:text-primary transition-colors line-clamp-1">
+                            {{ product.name }}</h3>
                         <p class="text-primary font-bold text-base">Rs.{{ product.price }}</p>
                     </a>
                 </div>
@@ -348,7 +350,6 @@
         if (menu.classList.contains('hidden')) {
             menu.classList.remove('hidden');
             chevron.classList.add('rotate-180');
-            // Force reflow for animation if needed
         } else {
             menu.classList.add('hidden');
             chevron.classList.remove('rotate-180');

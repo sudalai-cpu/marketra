@@ -5,6 +5,7 @@ class Section(models.Model):
     name = models.CharField(max_length=100)
     icon = models.ImageField(upload_to='sections/', blank=True, null=True)
     icon_url = models.URLField(blank=True, null=True, help_text="Fallback icon URL")
+    display_order = models.IntegerField(default=0, help_text="Display order (lower numbers first)")
 
     def __str__(self):
         return self.name
@@ -14,6 +15,7 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
+    display_order = models.IntegerField(default=0, help_text="Display order (lower numbers first)")
 
     def __str__(self):
         return self.name

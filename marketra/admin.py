@@ -3,7 +3,8 @@ from .models import Category, Product, ViewHistory, Section
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug')
+    list_display = ('name', 'section', 'display_order', 'slug')
+    list_editable = ('display_order',)
     prepopulated_fields = {'slug': ('name',)}
 
 @admin.register(Product)
@@ -15,8 +16,8 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'icon')
-    list_editable = ('icon',)
+    list_display = ('name', 'display_order', 'icon')
+    list_editable = ('display_order', 'icon')
 
 
 admin.site.register(ViewHistory)
