@@ -4,92 +4,98 @@
 {% block title %}Featured Products - Marketra.ai{% endblock %}
 
 {% block content %}
-<section class="section-grey min-h-screen py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- 1. Hero Section (Image Banner Carousel) -->
-        <div
-            class="relative w-full h-[400px] md:h-[500px] overflow-hidden mb-12 rounded-[2rem] shadow-2xl group border-thin border-white/20">
-            <div id="carousel"
-                class="flex transition-transform duration-700 ease-[cubic-bezier(0.4, 0, 0.2, 1)] h-full">
-                <!-- Slide 1 -->
-                <div class="min-w-full h-full relative">
-                    <img src="https://images.unsplash.com/photo-1491933382434-500287f9b54b?auto=format&fit=crop&q=80&w=1920"
-                        class="w-full h-full object-cover" alt="Premium Tech">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col items-start justify-center text-white p-12 md:p-20">
-                        <span class="badge-ai bg-white/10 border-white/20 text-white mb-4 backdrop-blur-md">Spring
-                            Collection 2026</span>
-                        <h2 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-lg leading-tight">Elevate Your
-                            <br><span class="text-blue-400">Digital Experience</span></h2>
-                        <p class="text-lg md:text-xl max-w-lg mb-8 text-gray-200 drop-shadow-md">Discover premium
-                            essentials curated by AI for the modern high-end professional.</p>
-                    </div>
-                </div>
-                <!-- Slide 2 -->
-                <div class="min-w-full h-full relative">
-                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=1920"
-                        class="w-full h-full object-cover" alt="Fashion Excellence">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col items-start justify-center text-white p-12 md:p-20">
-                        <span class="badge-ai bg-white/10 border-white/20 text-white mb-4 backdrop-blur-md">Luxury
-                            Apparel</span>
-                        <h2 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-lg leading-tight">Sophisticated
-                            <br><span class="text-blue-400">Ambition</span></h2>
-                        <p class="text-lg md:text-xl max-w-lg mb-8 text-gray-200 drop-shadow-md">Timeless fashion that
-                            reflects your unique taste and business leadership.</p>
-                    </div>
-                </div>
-                <!-- Slide 3 -->
-                <div class="min-w-full h-full relative">
-                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1920"
-                        class="w-full h-full object-cover" alt="Workspace Design">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col items-start justify-center text-white p-12 md:p-20">
-                        <span class="badge-ai bg-white/10 border-white/20 text-white mb-4 backdrop-blur-md">Modern
-                            Workspace</span>
-                        <h2 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-lg leading-tight">Curated
-                            <br><span class="text-blue-400">Excellence</span></h2>
-                        <p class="text-lg md:text-xl max-w-lg mb-8 text-gray-200 drop-shadow-md">Defining the boundaries
-                            between peak productivity and ultimate comfort.</p>
-                    </div>
+<section class="section-grey min-h-screen !pt-0">
+    <!-- 1. Hero Section (Image Banner Carousel) - Edge to Edge -->
+    <div class="relative w-full h-[300px] md:h-[380px] overflow-hidden group border-b border-white/10">
+        <div id="carousel" class="flex transition-transform duration-700 ease-[cubic-bezier(0.4, 0, 0.2, 1)] h-full">
+            <!-- Slide 1 -->
+            <div class="min-w-full h-full relative">
+                <img src="https://images.unsplash.com/photo-1491933382434-500287f9b54b?auto=format&fit=crop&q=80&w=1920"
+                    class="w-full h-full object-cover" alt="Premium Tech">
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent flex flex-col items-start justify-center text-white px-8 md:px-20 lg:px-32">
+                    <span
+                        class="badge-ai bg-white/10 border-white/20 text-white mb-3 backdrop-blur-md text-[10px] tracking-widest uppercase">Spring
+                        Collection 2026</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold mb-3 drop-shadow-lg leading-tight">Elevate Your
+                        <br><span class="text-blue-400">Digital Experience</span>
+                    </h2>
+                    <p class="text-sm md:text-base max-w-lg text-gray-200 drop-shadow-md opacity-90">Discover premium
+                        essentials curated by AI for the modern professional.</p>
                 </div>
             </div>
-            <!-- Navigation -->
-            <div
-                class="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onclick="moveSlide(-1)"
-                    class="w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-xl text-white rounded-full flex items-center justify-center border border-white/20 transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-                        </path>
-                    </svg>
-                </button>
-                <button onclick="moveSlide(1)"
-                    class="w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-xl text-white rounded-full flex items-center justify-center border border-white/20 transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </button>
+            <!-- Slide 2 -->
+            <div class="min-w-full h-full relative">
+                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=1920"
+                    class="w-full h-full object-cover" alt="Fashion Excellence">
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent flex flex-col items-start justify-center text-white px-8 md:px-20 lg:px-32">
+                    <span
+                        class="badge-ai bg-white/10 border-white/20 text-white mb-3 backdrop-blur-md text-[10px] tracking-widest uppercase">Luxury
+                        Apparel</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold mb-3 drop-shadow-lg leading-tight">Sophisticated
+                        <br><span class="text-blue-400">Ambition</span>
+                    </h2>
+                    <p class="text-sm md:text-base max-w-lg text-gray-200 drop-shadow-md opacity-90">Timeless fashion
+                        that reflects your unique taste and business leadership.</p>
+                </div>
             </div>
-            <!-- Slide Indicators -->
-            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
-                <div class="dot w-8 h-1 bg-white rounded-full transition-all" data-index="0"></div>
-                <div class="dot w-8 h-1 bg-white/30 rounded-full transition-all" data-index="1"></div>
-                <div class="dot w-8 h-1 bg-white/30 rounded-full transition-all" data-index="2"></div>
+            <!-- Slide 3 -->
+            <div class="min-w-full h-full relative">
+                <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1920"
+                    class="w-full h-full object-cover" alt="Workspace Design">
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent flex flex-col items-start justify-center text-white px-8 md:px-20 lg:px-32">
+                    <span
+                        class="badge-ai bg-white/10 border-white/20 text-white mb-3 backdrop-blur-md text-[10px] tracking-widest uppercase">Modern
+                        Workspace</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold mb-3 drop-shadow-lg leading-tight">Curated <br><span
+                            class="text-blue-400">Excellence</span></h2>
+                    <p class="text-sm md:text-base max-w-lg text-gray-200 drop-shadow-md opacity-90">Defining the
+                        boundaries between peak productivity and ultimate comfort.</p>
+                </div>
             </div>
         </div>
+        <!-- Navigation -->
+        <div class="absolute inset-0 flex items-center justify-between px-6 pointer-events-none">
+            <button onclick="moveSlide(-1)"
+                class="pointer-events-auto w-10 h-10 md:w-14 md:h-14 bg-black/20 hover:bg-black/40 backdrop-blur-md text-white rounded-full flex items-center justify-center border border-white/10 transition-all opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0">
+                <svg class="w-5 h-5 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7">
+                    </path>
+                </svg>
+            </button>
+            <button onclick="moveSlide(1)"
+                class="pointer-events-auto w-10 h-10 md:w-14 md:h-14 bg-black/20 hover:bg-black/40 backdrop-blur-md text-white rounded-full flex items-center justify-center border border-white/10 transition-all opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0">
+                <svg class="w-5 h-5 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+        <!-- Slide Indicators -->
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
+            <div class="dot w-8 h-0.5 md:w-12 md:h-1 bg-white transition-all duration-300" data-index="0"></div>
+            <div class="dot w-8 h-0.5 md:w-12 md:h-1 bg-white/20 transition-all duration-300" data-index="1"></div>
+            <div class="dot w-8 h-0.5 md:w-12 md:h-1 bg-white/20 transition-all duration-300" data-index="2"></div>
+        </div>
+    </div>
 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <!-- 2. Main Call-to-Action -->
-        <div class="mb-20">
+        <div class="flex justify-center mb-24">
             <button onclick="toggleCategoryModal(true)"
-                class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-8 px-12 rounded-3xl shadow-[0_20px_50px_rgba(0,86,179,0.3)] hover:shadow-[0_25px_60px_rgba(0,86,179,0.4)] hover:scale-[1.005] active:scale-[0.99] transition-all text-xl md:text-2xl flex items-center justify-center group">
-                <span class="mr-4 tracking-tight">Explore Categories & Curated Collections</span>
-                <div
-                    class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center transition-transform group-hover:translate-x-3">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                class="group relative inline-flex items-center justify-center px-10 py-5 font-bold text-white transition-all duration-300 bg-primary rounded-2xl hover:bg-blue-700 hover:scale-[1.05] active:scale-[0.98] shadow-blue-soft hover:shadow-[0_20px_50px_rgba(0,86,179,0.5)] overflow-hidden">
+                <span class="relative z-10 flex items-center tracking-tight text-lg md:text-xl">
+                    Explore Categories & Curated Collections
+                    <svg class="w-5 h-5 ml-3 transition-transform group-hover:translate-x-2" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                     </svg>
+                </span>
+                <!-- Premium Glow Effect -->
+                <div
+                    class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent transform translate-y-full group-hover:translate-y-0 transition-transform">
                 </div>
             </button>
         </div>
@@ -285,7 +291,7 @@
                     </svg>
                 </div>
                 <div>
-                    <span class="font-bold text-xl group-hover:text-primary transition-colors block">{{ category.name}}</span>
+                    <span class="font-bold text-xl group-hover:text-primary transition-colors block">{{category.name}}</span>
                     <span class="text-xs text-text-muted">{{ category.products.count }} High-end items</span>
                 </div>
             </a>
@@ -317,11 +323,11 @@
         // Update dots
         dots.forEach((dot, index) => {
             if (index === currentSlide) {
-                dot.classList.add('bg-white', 'w-12');
-                dot.classList.remove('bg-white/30', 'w-8');
+                dot.classList.add('bg-white', 'w-16', 'md:w-24');
+                dot.classList.remove('bg-white/20', 'w-8', 'md:w-12');
             } else {
-                dot.classList.remove('bg-white', 'w-12');
-                dot.classList.add('bg-white/30', 'w-8');
+                dot.classList.remove('bg-white', 'w-16', 'md:w-24');
+                dot.classList.add('bg-white/20', 'w-8', 'md:w-12');
             }
         });
     }
