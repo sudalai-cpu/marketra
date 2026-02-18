@@ -1,7 +1,16 @@
 from django.db import migrations, models
 from django.contrib.auth.models import User
 
+class Section(models.Model):
+    name = models.CharField(max_length=100)
+    icon = models.ImageField(upload_to='sections/', blank=True, null=True)
+    icon_url = models.URLField(blank=True, null=True, help_text="Fallback icon URL")
+
+    def __str__(self):
+        return self.name
+
 class Category(models.Model):
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='categories', null=True, blank=True)
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, ViewHistory 
+from .models import Category, Product, ViewHistory, Section
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -12,5 +12,11 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'stock_status', 'is_featured')
     search_fields = ('name', 'description')
     list_editable = ('price', 'stock_status', 'is_featured', 'ai_rank')
+
+@admin.register(Section)
+class SectionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'icon')
+    list_editable = ('icon',)
+
 
 admin.site.register(ViewHistory)

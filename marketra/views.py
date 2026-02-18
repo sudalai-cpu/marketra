@@ -174,11 +174,11 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect('marketra:home')
-from .models import Product, Category
+from .models import Product, Category, Section
 
 def featured_view(request):
-    # Fetch all categories
-    categories = Category.objects.all()
+    # Fetch all sections with their categories prefetched for hierarchy
+    sections = Section.objects.prefetch_related('categories').all()
     
     # Get selected category from query params
     selected_category_id = request.GET.get('category')
@@ -200,7 +200,7 @@ def featured_view(request):
     random_products = Product.objects.all().order_by('?')[:8]
     
     context = {
-        'categories': categories,
+        'sections': sections,
         'featured_products': featured_products,
         'selected_category': selected_category,
         'collection_count': len(collection_ids),

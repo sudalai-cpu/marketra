@@ -82,8 +82,8 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <!-- 2. Main Call-to-Action -->
-        <div class="flex justify-center mb-24">
-            <button onclick="toggleCategoryModal(true)"
+        <div class="flex justify-center mb-24 relative">
+            <button id="explore-trigger" onclick="toggleCategoryModal(true)"
                 class="group relative inline-flex items-center justify-center px-10 py-5 font-bold text-white transition-all duration-300 bg-primary rounded-2xl hover:bg-blue-700 hover:scale-[1.05] active:scale-[0.98] shadow-blue-soft hover:shadow-[0_20px_50px_rgba(0,86,179,0.5)] overflow-hidden">
                 <span class="relative z-10 flex items-center tracking-tight text-lg md:text-xl">
                     Explore Categories & Curated Collections
@@ -98,6 +98,86 @@
                     class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent transform translate-y-full group-hover:translate-y-0 transition-transform">
                 </div>
             </button>
+
+            <!-- Refined Category Modal (Anchored Accordion) -->
+            <div id="category-modal"
+                class="absolute top-[calc(100%+1rem)] left-1/2 -translate-x-1/2 z-[60] hidden w-full max-w-lg">
+                <div
+                    class="relative bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden transform transition-all opacity-0 translate-y-4 duration-300">
+                    <div class="p-8 pb-4 flex justify-between items-center border-b border-gray-50 bg-gray-50/50">
+                        <h3 class="text-xl font-bold text-text-dark">Quick Navigation</h3>
+                        <button onclick="toggleCategoryModal(false)"
+                            class="text-text-muted hover:text-primary transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="max-h-[500px] overflow-y-auto p-4 custom-scrollbar">
+                        <!-- All Products Option -->
+                        <a href="{% url 'marketra:featured' %}"
+                            class="flex items-center p-4 hover:bg-primary/5 rounded-2xl transition-all group mb-2 border border-transparent hover:border-primary/10">
+                            <div
+                                class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mr-4 text-primary group-hover:scale-110 transition-transform">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16m-7 6h7"></path>
+                                </svg>
+                            </div>
+                            <span class="font-bold text-text-dark group-hover:text-primary transition-colors">All
+                                Featured Products</span>
+                        </a>
+
+                        <!-- Sections Accordion -->
+                        {% for section in sections %}
+                        <div class="section-group mb-2">
+                            <button onclick="toggleAccordion('section-{{ section.id }}', this)"
+                                class="w-full flex items-center p-4 hover:bg-gray-50 rounded-2xl transition-all group border border-transparent">
+                                <div
+                                    class="w-10 h-10 bg-secondary-bg rounded-xl flex items-center justify-center mr-4 group-hover:bg-white transition-colors overflow-hidden">
+                                    {% if section.icon %}
+                                    <img src="{{ section.icon.url }}" alt="{{ section.name }}"
+                                        class="w-full h-full object-cover">
+                                    {% elif section.icon_url %}
+                                    <img src="{{ section.icon_url }}" alt="{{ section.name }}"
+                                        class="w-full h-full object-cover">
+                                    {% else %}
+                                    <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                        </path>
+                                    </svg>
+                                    {% endif %}
+                                </div>
+                                <span class="font-bold text-text-dark flex-grow text-left">{{ section.name }}</span>
+                                <svg class="w-4 h-4 text-text-muted transition-transform duration-300 chevron"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+
+                            <!-- Sub-categories (Hidden by default) -->
+                            <div id="section-{{ section.id }}"
+                                class="accordion-content hidden px-4 py-2 space-y-1 overflow-hidden transition-all duration-300">
+                                {% for category in section.categories.all %}
+                                <a href="?category={{ category.id }}#product-section"
+                                    class="flex items-center p-3 pl-14 hover:text-primary text-sm font-medium text-text-medium transition-colors border-l-2 border-transparent hover:border-primary/20 ml-2">
+                                    {{ category.name }}
+                                    <span
+                                        class="ml-auto text-[10px] text-text-muted bg-gray-100 px-2 py-0.5 rounded-full">{{
+                                        category.products.count }}</span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Filter Info -->
@@ -246,62 +326,6 @@
     </div>
 </section>
 
-<!-- Category Modal -->
-<div id="category-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300"
-        onclick="toggleCategoryModal(false)"></div>
-    <div
-        class="relative bg-white rounded-[2.5rem] max-w-4xl w-full p-10 md:p-12 shadow-2xl overflow-hidden transform transition-all translate-y-0 scale-100">
-        <div class="flex justify-between items-start mb-10">
-            <div>
-                <h2 class="text-4xl font-extrabold tracking-tight mb-2">Explore Marketra</h2>
-                <p class="text-text-muted">Choose a category to filter your premium experience.</p>
-            </div>
-            <button onclick="toggleCategoryModal(false)"
-                class="p-2 bg-secondary-bg hover:bg-gray-100 rounded-full text-text-muted hover:text-primary transition-all">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                    </path>
-                </svg>
-            </button>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a href="{% url 'marketra:featured' %}"
-                class="flex items-center p-6 bg-gray-50 hover:bg-primary/5 rounded-3xl border-thin border-gray-100 hover:border-primary/20 transition-all group">
-                <div
-                    class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mr-5 group-hover:bg-primary group-hover:text-white transition-all transform group-hover:rotate-6">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M4 6h16M4 12h16m-7 6h7"></path>
-                    </svg>
-                </div>
-                <div>
-                    <span class="font-bold text-xl group-hover:text-primary transition-colors block">All Products</span>
-                    <span class="text-xs text-text-muted">Explore everything</span>
-                </div>
-            </a>
-            {% for category in categories %}
-            <a href="?category={{ category.id }}#product-section"
-                class="flex items-center p-6 bg-gray-50 hover:bg-primary/5 rounded-3xl border-thin border-gray-100 hover:border-primary/20 transition-all group">
-                <div
-                    class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mr-5 group-hover:bg-primary group-hover:text-white transition-all transform group-hover:rotate-6">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M4 6h16M4 12h16m-7 6h7"></path>
-                    </svg>
-                </div>
-                <div>
-                    <span class="font-bold text-xl group-hover:text-primary transition-colors block">{{category.name}}</span>
-                    <span class="text-xs text-text-muted">{{ category.products.count }} High-end items</span>
-                </div>
-            </a>
-            {% endfor %}
-        </div>
-        <div class="mt-12 pt-8 border-t border-gray-100 text-center">
-            <p class="text-sm text-text-muted">Professional Curation • Data-Driven Excellence</p>
-        </div>
-    </div>
-</div>
 
 <script>
     // Carousel Logic
@@ -339,18 +363,51 @@
     function toggleCategoryModal(show) {
         const modal = document.getElementById('category-modal');
         if (!modal) return;
+
+        const content = modal.querySelector('.relative');
         if (show) {
             modal.classList.remove('hidden');
             setTimeout(() => {
-                modal.querySelector('.relative').classList.add('translate-y-0', 'opacity-100');
+                content.classList.add('translate-y-0', 'opacity-100');
             }, 10);
         } else {
-            modal.querySelector('.relative').classList.remove('translate-y-0', 'opacity-100');
+            content.classList.remove('translate-y-0', 'opacity-100');
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
         }
     }
+
+    // Accordion Logic
+    function toggleAccordion(id, btn) {
+        const content = document.getElementById(id);
+        const chevron = btn.querySelector('.chevron');
+
+        // Close others
+        document.querySelectorAll('.accordion-content').forEach(el => {
+            if (el.id !== id) {
+                el.classList.add('hidden');
+            }
+        });
+        document.querySelectorAll('.chevron').forEach(el => {
+            if (el !== chevron) {
+                el.classList.remove('rotate-180');
+            }
+        });
+
+        // Toggle current
+        content.classList.toggle('hidden');
+        chevron.classList.toggle('rotate-180');
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('mousedown', (e) => {
+        const modal = document.getElementById('category-modal');
+        const trigger = document.getElementById('explore-trigger');
+        if (modal && !modal.contains(e.target) && !trigger.contains(e.target)) {
+            toggleCategoryModal(false);
+        }
+    });
 </script>
 </section>
 {% endblock %}
