@@ -206,6 +206,15 @@ def featured_view(request):
 
 def category_products_view(request, category_id):
     category = get_object_or_404(Category, id=category_id)
+    section = category.section
+    
+    # Fetch all categories related to this section for the sidebar
+    # If no section is assigned, just show the current category
+    if section:
+        categories = section.categories.all().order_by('display_order')
+    else:
+        categories = [category]
+        
     sort_by = request.GET.get('sort', 'best_match') # Default to AI Rank
     
     products = Product.objects.filter(category=category)
@@ -225,6 +234,8 @@ def category_products_view(request, category_id):
         
     context = {
         'category': category,
+        'section': section,
+        'categories': categories,
         'products': products,
         'sort_by': sort_by,
         'collection_count': len(collection_ids),

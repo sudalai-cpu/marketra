@@ -81,86 +81,46 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <!-- 2. Main Call-to-Action -->
-        <div class="flex justify-center mb-12 relative">
-            <button id="explore-trigger" onclick="toggleCategoryMegaMenu()"
-                class="group relative inline-flex items-center justify-center px-12 py-6 font-bold text-white transition-all duration-300 bg-primary rounded-2xl hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] shadow-blue-soft hover:shadow-[0_20px_50px_rgba(0,86,179,0.5)] overflow-hidden min-w-[320px]">
-                <span class="relative z-10 flex items-center tracking-tight text-xl">
-                    Explore Categories
-                    <svg id="explore-chevron" class="w-6 h-6 ml-4 transition-transform duration-300" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7">
-                        </path>
-                    </svg>
-                </span>
-                <!-- Premium Glow Effect -->
-                <div
-                    class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent transform translate-y-full group-hover:translate-y-0 transition-transform">
-                </div>
-            </button>
-        </div>
+        <!-- 2. Section Icon Grid (Amazon-Style) -->
+        <div class="mb-16">
+            <div class="flex flex-col items-center mb-8">
+                <h3 class="text-2xl font-extrabold text-text-dark tracking-tight">Shop by Section</h3>
+                <div class="w-12 h-1 bg-primary mt-2 rounded-full"></div>
+            </div>
 
-        <!-- Full-Width Mega-Menu (Integrated Flow) -->
-        <div id="category-mega-menu"
-            class="hidden w-full mb-24 overflow-hidden border-y border-gray-100 bg-white/50 backdrop-blur-sm animate-fade-in-down">
-            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-end mb-12 border-b border-gray-100 pb-8">
-                    <div>
-                        <h3 class="text-3xl font-extrabold text-text-dark tracking-tight">Browse Collections</h3>
-                        <p class="text-text-muted mt-2">Discover high-end essentials organized for professionals.</p>
-                    </div>
-                    <a href="{% url 'marketra:featured' %}"
-                        class="flex items-center px-6 py-3 bg-primary/5 hover:bg-primary/10 text-primary font-bold rounded-xl transition-all group">
-                        View All Collections
-                        <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                        </svg>
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                    {% for section in sections %}
-                    <div class="mega-section-group">
-                        <div class="flex items-center mb-6 pb-4 border-b border-gray-50">
-                            <div
-                                class="w-12 h-12 bg-secondary-bg rounded-2xl flex items-center justify-center mr-4 shadow-sm">
-                                {% if section.icon %}
-                                <img src="{{ section.icon.url }}" alt="{{ section.name }}"
-                                    class="w-full h-full object-cover">
-                                {% elif section.icon_url %}
-                                <img src="{{ section.icon_url }}" alt="{{ section.name }}"
-                                    class="w-full h-full object-cover">
-                                {% else %}
-                                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                    </path>
-                                </svg>
-                                {% endif %}
-                            </div>
-                            <h4 class="text-xl font-bold text-text-dark tracking-tight">{{ section.name }}</h4>
+            <!-- Scrollable row on mobile, grid on desktop -->
+            <div class="flex overflow-x-auto pb-4 md:pb-0 md:grid md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 no-scrollbar">
+                {% for section in sections %}
+                <a href="{% if section.categories.all %}{% url 'marketra:category_products' section.categories.all.0.id %}{% else %}#{% endif %}" 
+                   class="flex flex-col items-center group min-w-[100px] md:min-w-0">
+                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white shadow-soft border border-gray-100 flex items-center justify-center mb-3 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg overflow-hidden">
+                        {% if section.icon %}
+                        <img src="{{ section.icon.url }}" alt="{{ section.name }}" class="w-full h-full object-cover">
+                        {% elif section.icon_url %}
+                        <img src="{{ section.icon_url }}" alt="{{ section.name }}" class="w-full h-full object-cover">
+                        {% else %}
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                            </svg>
                         </div>
-
-                        <div class="grid grid-cols-1 gap-1">
-                            {% for category in section.categories.all %}
-                            <a href="{% url 'marketra:category_products' category.id %}"
-                                class="group flex items-center justify-between p-3 hover:bg-primary/5 rounded-xl transition-all">
-                                <span
-                                    class="text-text-medium font-medium group-hover:text-primary transition-colors">{{category.name}}</span>
-                                <span
-                                    class="text-[10px] text-text-muted bg-gray-100 px-2 py-0.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                    {{ category.products.count }} items
-                                </span>
-                            </a>
-                            {% endfor %}
-                        </div>
+                        {% endif %}
                     </div>
-                    {% endfor %}
-                </div>
+                    <span class="text-sm font-bold text-text-dark text-center group-hover:text-primary transition-colors">{{ section.name }}</span>
+                </a>
+                {% endfor %}
             </div>
         </div>
+
+        <style>
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        </style>
 
         <!-- Filter Info -->
         {% if selected_category %}
