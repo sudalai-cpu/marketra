@@ -89,11 +89,13 @@
             </div>
 
             <!-- Scrollable row on mobile, grid on desktop -->
-            <div class="flex overflow-x-auto pb-4 md:pb-0 md:grid md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 no-scrollbar">
+            <div
+                class="flex overflow-x-auto pb-4 md:pb-0 md:grid md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 no-scrollbar">
                 {% for section in sections %}
-                <a href="{% if section.categories.all %}{% url 'marketra:category_products' section.categories.all.0.id %}{% else %}#{% endif %}" 
-                   class="flex flex-col items-center group min-w-[100px] md:min-w-0">
-                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white shadow-soft border border-gray-100 flex items-center justify-center mb-3 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg overflow-hidden">
+                <a href="{% if section.categories.all %}{% url 'marketra:category_products' section.categories.all.0.id %}{% else %}#{% endif %}"
+                    class="flex flex-col items-center group min-w-[100px] md:min-w-0">
+                    <div
+                        class="w-20 h-20 md:w-24 md:h-24 rounded-lg bg-white shadow-soft border border-gray-100 flex items-center justify-center mb-3 transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg overflow-hidden">
                         {% if section.icon %}
                         <img src="{{ section.icon.url }}" alt="{{ section.name }}" class="w-full h-full object-cover">
                         {% elif section.icon_url %}
@@ -101,12 +103,14 @@
                         {% else %}
                         <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                             <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16m-7 6h7"></path>
                             </svg>
                         </div>
                         {% endif %}
                     </div>
-                    <span class="text-sm font-bold text-text-dark text-center group-hover:text-primary transition-colors">{{ section.name }}</span>
+                    <span
+                        class="text-xs font-bold text-text-dark text-center group-hover:text-primary transition-colors">{{section.name}}</span>
                 </a>
                 {% endfor %}
             </div>
@@ -116,6 +120,7 @@
             .no-scrollbar::-webkit-scrollbar {
                 display: none;
             }
+
             .no-scrollbar {
                 -ms-overflow-style: none;
                 scrollbar-width: none;
@@ -149,54 +154,66 @@
             </h2>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {% for product in featured_products %}
             <div
-                class="card group hover:scale-[1.02] transition-all duration-300 relative bg-white p-4 rounded-xl border border-gray-100">
-                <a href="{% url 'marketra:product_detail' product.pk %}" class="block hover:no-underline">
+                class="card group hover:shadow-xl transition-all duration-300 relative bg-white p-4 rounded-lg border border-gray-100 shadow-sm flex flex-col">
+                <!-- Wishlist Heart Icon -->
+                <button
+                    class="js-wishlist-toggle absolute top-6 right-6 z-10 text-gray-400 hover:text-red-500 transition-colors bg-white/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm border border-gray-50"
+                    data-product-id="{{ product.pk }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                        </path>
+                    </svg>
+                </button>
+
+                <a href="{% url 'marketra:product_detail' product.pk %}" class="block hover:no-underline flex-grow">
                     <div
-                        class="aspect-[4/5] bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border-thin border-gray-100 relative">
+                        class="aspect-square bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border border-gray-50 relative">
                         {% if product.image %}
                         <img src="{{ product.image.url }}" alt="{{ product.name }}"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            class="w-full h-full object-contain p-2">
                         {% elif product.image_url %}
                         <img src="{{ product.image_url }}" alt="{{ product.name }}"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            class="w-full h-full object-contain p-2">
                         {% else %}
-                        <span class="text-gray-300 font-medium text-xs">Product Image</span>
+                        <span class="text-gray-300 font-medium text-[10px]">Product Image</span>
                         {% endif %}
 
-                        <div class="absolute top-3 right-3">
+                        <div class="absolute bottom-2 left-2">
                             <span
-                                class="bg-white/90 backdrop-blur-md text-primary text-[9px] font-bold px-2 py-1 rounded shadow-sm border border-blue-50">
+                                class="bg-primary/10 backdrop-blur-sm text-primary text-[8px] font-bold px-2 py-0.5 rounded border border-primary/10 uppercase tracking-tighter">
                                 AI RANK #{{ product.ai_rank }}
                             </span>
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <span class="text-[10px] text-text-muted uppercase tracking-widest mb-1 block">
-                                {{ product.category.name|default:"Uncategorized" }}
-                            </span>
-                            <h3 class="text-base font-bold text-text-dark group-hover:text-primary transition-colors">
-                                {{ product.name }}
-                            </h3>
+                    <div class="text-left">
+                        <h3
+                            class="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[40px] leading-tight mb-1">
+                            {{ product.name }}
+                        </h3>
+                        <p class="text-[10px] font-medium text-gray-500 mb-2">1 unit</p>
+                        <div class="flex items-center mb-4">{{ product.price }}</span>
                         </div>
-                        <span class="text-primary font-bold text-lg">Rs.{{ product.price }}</span>
                     </div>
                 </a>
 
-                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
-                    <span class="badge-success text-[10px]">{{ product.stock_status }}</span>
-
-                    <button onclick="addToCollection({{ product.pk }}, this)"
-                        class="text-xs font-semibold hover:underline flex items-center {% if product.id in collection_ids %}text-success{% else %}text-primary{% endif %}"
-                        {% if product.id in collection_ids %}disabled{% endif %}>
+                <div class="mt-auto">
+                    <button
+                        class="js-add-to-cart w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all shadow-md shadow-blue-200/50 flex items-center justify-center text-xs group/btn active:scale-95 {% if product.id in collection_ids %}opacity-80 bg-success hover:bg-success{% endif %}"
+                        data-product-id="{{ product.pk }}" {% if product.id in collection_ids %}disabled{% endif %}>
                         {% if product.id in collection_ids %}
-                        Added to Collection
+                        <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Added
                         {% else %}
-                        Add to Collection
+                        Add to Cart
                         {% endif %}
                     </button>
                 </div>
@@ -228,48 +245,144 @@
                 </button>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {% for product in random_products %}
-                <div class="card group hover:shadow-xl transition-all duration-300">
-                    <a href="{% url 'marketra:product_detail' product.pk %}" class="block">
+                <div
+                    class="card group hover:shadow-xl transition-all duration-300 relative bg-white p-4 rounded-lg border border-gray-100 shadow-sm flex flex-col">
+                    <!-- Wishlist Heart Icon -->
+                    <button
+                        class="js-wishlist-toggle absolute top-6 right-6 z-10 text-gray-400 hover:text-red-500 transition-colors bg-white/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm border border-gray-50"
+                        data-product-id="{{ product.pk }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <a href="{% url 'marketra:product_detail' product.pk %}" class="block hover:no-underline flex-grow">
                         <div
-                            class="aspect-[4/5] bg-gray-50 rounded-xl overflow-hidden mb-4 border-thin border-gray-100 relative">
+                            class="aspect-square bg-gray-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden border border-gray-50 relative">
                             {% if product.image %}
                             <img src="{{ product.image.url }}" alt="{{ product.name }}"
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                class="w-full h-full object-contain p-2">
                             {% elif product.image_url %}
                             <img src="{{ product.image_url }}" alt="{{ product.name }}"
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                class="w-full h-full object-contain p-2">
+                            {% else %}
+                            <span class="text-gray-300 font-medium text-[10px]">Product Image</span>
                             {% endif %}
-                            <div
-                                class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span
-                                    class="bg-white/90 backdrop-blur-md text-primary text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm">View
-                                    Details</span>
+                        </div>
+
+                        <div class="text-left">
+                            <h3
+                                class="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[40px] leading-tight mb-1">
+                                {{ product.name }}
+                            </h3>
+                            <p class="text-[10px] font-medium text-gray-500 mb-2">1 unit</p>
+                            <div class="flex items-center mb-4">
+                                <span class="text-lg font-extrabold text-gray-900 tracking-tight">Rs.{{ product.price
+                                    }}</span>
                             </div>
                         </div>
-                        <h3
-                            class="font-bold text-text-dark text-sm mb-1 group-hover:text-primary transition-colors line-clamp-1">
-                            {{ product.name }}</h3>
-                        <p class="text-primary font-bold text-base">Rs.{{ product.price }}</p>
                     </a>
+
+                    <div class="mt-auto">
+                        <button
+                            class="js-add-to-cart w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all shadow-md shadow-blue-200/50 flex items-center justify-center text-xs group/btn active:scale-95 {% if product.id in collection_ids %}opacity-80 bg-success hover:bg-success{% endif %}"
+                            data-product-id="{{ product.pk }}" {% if product.id in collection_ids %}disabled{% endif %}>
+                            {% if product.id in collection_ids %}
+                            <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Added
+                            {% else %}
+                            Add to Cart
+                            {% endif %}
+                        </button>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+            </div>
+
+            <div class="mt-20 p-12 bg-white rounded-3xl border border-gray-100 shadow-soft text-center">
+                <h3 class="text-2xl font-bold mb-4 italic">"True luxury is in the selection."</h3>
+                <p class="text-text-medium max-w-2xl mx-auto leading-relaxed">
+                    Our AI engine doesn't just recommend; it understands the professional nuance of your requirements.
+                    Experience a marketplace where quality never compromises on utility.
+                </p>
             </div>
         </div>
-
-        <div class="mt-20 p-12 bg-white rounded-3xl border border-gray-100 shadow-soft text-center">
-            <h3 class="text-2xl font-bold mb-4 italic">"True luxury is in the selection."</h3>
-            <p class="text-text-medium max-w-2xl mx-auto leading-relaxed">
-                Our AI engine doesn't just recommend; it understands the professional nuance of your requirements.
-                Experience a marketplace where quality never compromises on utility.
-            </p>
-        </div>
-    </div>
 </section>
 
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Standardized Add to Collection (Cart) logic
+        const addToCollection = function (productId, btn) {
+            const originalContent = btn.innerHTML;
+            btn.disabled = true;
+
+            fetch(`/collection/toggle/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.status === 'success') {
+                        if (data.action === 'added') {
+                            btn.innerHTML = `
+                            <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Added
+                        `;
+                            btn.classList.add('opacity-80', 'bg-success');
+                            btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                            btn.disabled = true;
+                        } else {
+                            btn.innerHTML = 'Add to Cart';
+                            btn.classList.remove('opacity-80', 'bg-success');
+                            btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                            btn.disabled = false;
+                        }
+
+                        // Update badge
+                        const badge = document.getElementById('collection-badge');
+                        if (badge) {
+                            badge.innerText = data.count;
+                            badge.classList.toggle('hidden', data.count === 0);
+                        }
+                    } else {
+                        btn.innerHTML = originalContent;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                });
+        };
+
+        // Event delegation for cards
+        document.body.addEventListener('click', function (e) {
+            const btn = e.target.closest('.js-add-to-cart');
+            if (btn) {
+                e.preventDefault();
+                const productId = btn.dataset.productId;
+                if (productId) {
+                    addToCollection(productId, btn);
+                }
+            }
+        });
+    });
+
     // Carousel Logic
     let currentSlide = 0;
     const slides = document.querySelectorAll('#carousel > div');

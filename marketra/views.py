@@ -70,10 +70,20 @@ def product_detail(request, pk):
             strength=1
         )
 
+    # Similar products (same category, excluding current product)
+    similar_products = Product.objects.filter(category=product.category).exclude(pk=pk).order_by('?')[:4]
+    
+    # Collection IDs for similar products
+    collection_ids = request.session.get('collection', [])
+    if request.user.is_authenticated and hasattr(request.user, 'collection'):
+        collection_ids = list(request.user.collection.products.values_list('id', flat=True))
+
     context = {
         'product': product,
         'categories': Category.objects.all(),
-        'in_collection': request.user.is_authenticated and hasattr(request.user, 'collection') and request.user.collection.products.filter(pk=pk).exists(),
+        'similar_products': similar_products,
+        'collection_ids': collection_ids,
+        'in_collection': product.id in collection_ids,
         'in_wishlist': request.user.is_authenticated and hasattr(request.user, 'wishlist') and request.user.wishlist.products.filter(pk=pk).exists(),
     }
     return render(request, 'marketra/product_detail.html', context)
