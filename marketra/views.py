@@ -194,20 +194,34 @@ def featured_view(request):
         Prefetch('categories', queryset=Category.objects.order_by('display_order'))
     ).order_by('display_order')
     
-    # Fetch all featured products
-    featured_products = Product.objects.filter(is_featured=True).order_by('ai_rank')
-    # If none marked as featured, fallback to top 12 by AI rank
-    if not featured_products.exists():
-        featured_products = Product.objects.all().order_by('ai_rank')[:12]
+    # Fetch all featured products - falling back to all if none marked
+    featured_qs = Product.objects.filter(is_featured=True)
+    if not featured_qs.exists():
+        featured_qs = Product.objects.all()
     
+    # AI Spotlight: Get top 2 recommendations
+    ai_spotlight = []
+    if request.user.is_authenticated:
+        recommended_data = get_hybrid_recommendations(request.user, num_rec=2)
+        if recommended_data:
+            ai_spotlight = [item['product'] for item in recommended_data]
+    
+    # Fallback for AI Spotlight if not enough recommendations
+    if len(ai_spotlight) < 2:
+        remaining = 2 - len(ai_spotlight)
+        fallback_products = featured_qs.order_by('ai_rank').exclude(id__in=[p.id for p in ai_spotlight])[:remaining]
+        ai_spotlight.extend(list(fallback_products))
+
     collection_ids = request.session.get('collection', [])
+    if request.user.is_authenticated and hasattr(request.user, 'collection'):
+        collection_ids = list(request.user.collection.products.values_list('id', flat=True))
     
     # Fetch random products for discovery section
     random_products = Product.objects.all().order_by('?')[:8]
     
     context = {
         'sections': sections,
-        'featured_products': featured_products,
+        'ai_spotlight': ai_spotlight,
         'collection_count': len(collection_ids),
         'collection_ids': collection_ids,
         'random_products': random_products,
